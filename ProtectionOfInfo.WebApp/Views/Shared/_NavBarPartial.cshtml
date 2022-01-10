@@ -1,0 +1,51 @@
+﻿@using ProtectionOfInfo.WebApp.Data
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" asp-controller="Home" asp-action="Index">Главная страница</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown"
+                   role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor:pointer;">
+                    О программе
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" asp-controller="Home" asp-action="ProtectionOfInformation">Защита информации</a>
+                    <a class="dropdown-item" asp-controller="Home" asp-action="FundamentalsOfNewInformationTechnologies">Основы новых информационных технологий</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Dictionary" asp-action="Index">Словарь</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown"
+                   role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor:pointer;">
+                    Личный кабинет
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    @if (!User.Identity!.IsAuthenticated)
+                    {
+                        <a class="dropdown-item" asp-controller="Home" asp-action="LogIn" id="login">Авторизация</a>
+                    }
+                    else
+                    {
+                        <a class="dropdown-item" asp-controller="Home" asp-action="MyAccount" id="account">Открыть</a>
+                        <a class="dropdown-item" asp-controller="Home" asp-action="LogOut" id="logout">Выйти</a>
+                    }
+                </div>
+            </li>
+        </ul>
+        <div class="form-inline">
+            <form asp-controller="Book" asp-action="SearchWithOtherEntities" method="get">
+                <input name="ObjectSearch" value="All" type="hidden" style="visibility:hidden; display: none;" />
+                <input name="Search" class="form-control mr-sm-2" type="search" placeholder="Поиск" aria-label="Search"
+                       id="SimpleTextSearch">
+                <button class="btn btn-outline-light my-2 my-sm-0" type="submit" id="SimpleSearch">Поиск</button>
+            </form>
+        </div>
+    </div>
+</nav>

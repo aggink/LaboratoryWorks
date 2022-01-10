@@ -1,0 +1,101 @@
+﻿@using ProtectionOfInfo.WebApp.Data.Configurations
+@using ProtectionOfInfo.WebApp.Infrastructure.OperationResults
+@using ProtectionOfInfo.WebApp.ViewModels.CatalogViewModels.AuthorViewModels
+@using ProtectionOfInfo.WebApp.ViewModels
+@model OperationResult<List<AuthorViewModel>>
+@{
+    ViewData["Title"] = "Все авторы";
+    ViewData["MiniTitle"] = "Список всех добавленных авторов";
+    ViewData["ErrorTitle"] = ViewData["MiniTitle"];
+}
+
+<partial name="_NavAdminPartial" />
+
+@if (Model != null && !Model.Ok || Model!.MetaData.Type != MetaDataType.Success)
+{
+    var operation = new OperationResult<object>();
+    operation.MetaData = Model.MetaData;
+    operation.Exception = Model.Exception;
+    operation.AppendLog(Model.Logs);
+    <partial name="_ErrorPartial" model='operation' />
+}
+
+@if (Model != null && Model.Ok)
+{
+    var listSort = new List<NavMethodsForTablesViewModel<ParamSort>>() {
+        new NavMethodsForTablesViewModel<ParamSort>()
+        {
+            Name = $"Сортировка по ФИО автора",
+            Controller = "Author",
+            Action = "Sort",
+            Param = new List<ParamSort>()
+{
+                new ParamSort("от a до я", "Name", TypeSort.OrderBy),
+                new ParamSort("от я до а", "Name", TypeSort.OrderByDescending)
+            }
+        },
+        new NavMethodsForTablesViewModel<ParamSort>()
+        {
+            Name = "Сортировка по Биографии автора",
+            Controller = "Author",
+            Action = "Sort",
+            Param = new List<ParamSort>()
+{
+                new ParamSort("от а до я", "Biography", TypeSort.OrderBy),
+                new ParamSort("от я до а", "Biography", TypeSort.OrderByDescending)
+            }
+        }
+    };
+
+    var Search = new NavMethodsForTablesViewModel<ParamSearch>()
+    {
+        Name = "Поиск по таблице Авторы",
+        Controller = "Author",
+        Action = "Search",
+        Param = new List<ParamSearch>()
+{
+            new ParamSearch("Всем полям", "All"),
+            new ParamSearch("ФИО автора", "Name"),
+            new ParamSearch("Биография автора", "Biography")
+        }
+    };
+
+    var operation = OperationResult.CreateResult<NavMethodsForTablesViewModel>(new NavMethodsForTablesViewModel(listSort, Search));
+    <partial name="_NavMethodsForTablesPartial" model='operation' />
+
+    <div class="container align-items-center mt-5">
+        <h2 class="text-center">@ViewData["MiniTitle"]</h2>
+        <p class="text-center">Просмотр списка авторов (редактирование и удаление авторов)</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="text-center" scope="col">#</th>
+                    <th class="text-center" scope="col">@EntitiesModelsConfiguration.AuthorName</th>
+                    <th class="text-center" scope="col">@EntitiesModelsConfiguration.AuthorBiography</th>
+                    <th class="text-center" scope="col">Изменить</th>
+                    <th class="text-center" scope="col">Удалить</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int i = 1;
+                    foreach (var value in Model.Result)
+                    {
+                        <tr>
+                            <th class="text-center" scope="row">@i.ToString()</th>
+                            <td class="text-center" scope="row">@value.Name</td>
+                            <td class="text-center" scope="row">@value.Biography</td>
+                            <td class="text-center" scope="row">
+                                <a asp-controller="Author" asp-action="Update" asp-route-Id="@value.Id.ToString()" class="btn btn-primary btn-block" role="button">Изменить</a>
+                            </td>
+                            <td class="text-center" scope="row">
+                                <a asp-controller="Author" asp-action="Delete" asp-route-Id="@value.Id.ToString()" class="btn btn-primary btn-block" role="button">Удалить</a>
+                            </td>
+                        </tr>
+                        i++;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+}

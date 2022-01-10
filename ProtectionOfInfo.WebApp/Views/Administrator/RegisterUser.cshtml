@@ -1,0 +1,24 @@
+﻿@model ProtectionOfInfo.WebApp.ViewModels.AccountViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Регистрация новых пользователей";
+}
+
+<div class="container col-6 align-items-center mt-5">
+    <h1 class="text-center">Регистрация нового пользователя</h1>
+    <form method="post" asp-controller="Administrator" asp-action="RegisterUser">
+        <div asp-validation-summary="All"></div>
+        <div class="form-group">
+            <label asp-for="UserName" for="UserName">Имя нового пользователя</label>
+            <input asp-for="UserName" type="text" class="form-control" id="UserName" placeholder="Имя нового пользователя">
+        </div>
+        <div class="form-group">
+            <label asp-for="Password" for="Password">Пароль</label>
+            <input asp-for="Password" type="password" class="form-control" id="Password" placeholder="Пароль">
+        </div>
+        <div class="form-group">
+            <label asp-for="PasswordConfirm" for="PasswordConfirm">Новый пароль еще раз</label>
+            <input asp-for="PasswordConfirm" type="password" class="form-control" id="PasswordConfirm" placeholder="Новый пароль еще раз">
+        </div>
+        <button type="submit" class="btn btn-primary">Создать пользователя</button>
+    </form>
+</div>

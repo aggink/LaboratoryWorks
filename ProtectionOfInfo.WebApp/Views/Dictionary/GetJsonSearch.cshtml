@@ -1,0 +1,22 @@
+﻿@using ProtectionOfInfo.WebApp.Infrastructure.OperationResults
+@model OperationResult<string>
+
+@{
+    ViewData["Title"] = "Словарь";
+    ViewData["ErrorTitle"] = "Ошибка при выполнении запроса";
+}
+
+@if (Model != null && !Model.Ok)
+{
+    var operation = OperationResult.CreateResult<object>();
+    operation.AppendLog(Model.Logs);
+    operation.MetaData = Model.MetaData;
+    operation.Exception = operation.Exception;
+
+    <partial name="_ErrorPartial" model='operation' />
+}
+
+@if(Model != null && Model.Ok)
+{
+    @Model.Result
+}

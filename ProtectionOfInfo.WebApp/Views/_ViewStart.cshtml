@@ -1,0 +1,24 @@
+﻿@{      
+    if (ViewBag.Admin ??= false)
+    {
+        Layout = "./Layout/_AdminLayout";
+    }
+    else
+    {
+        if (ViewBag.User ??= false)
+        {
+            Layout = "./Layout/_UserLayout";
+        }
+        else
+        {
+            if(ViewBag.JSON ??= false)
+            {
+
+            }
+            else
+            {
+                Layout = "./Layout/_Layout";
+            }
+        }
+    }
+}

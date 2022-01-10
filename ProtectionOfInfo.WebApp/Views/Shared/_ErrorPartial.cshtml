@@ -1,0 +1,66 @@
+﻿@using ProtectionOfInfo.WebApp.Infrastructure.OperationResults
+@model OperationResult<object>
+
+<div class="container col-6 mb-5 mt-5">
+    <h2 class="text-center mb-4">@ViewData["ErrorTitle"]</h2>
+    @if (Model != null && Model.MetaData != null)
+    {
+        @switch (Model.MetaData.Type)
+        {
+            case MetaDataType.Info:
+                <div class="alert alert-primary align-items-center" role="alert">
+                    <h4 class="alert-heading text-center">Уведомление!</h4>
+                    @Write()
+                </div>
+                break;
+            case MetaDataType.Success:
+                <div class="alert alert-success align-items-center" role="alert">
+                    <h4 class="alert-heading text-center">Успех!</h4>
+                    @Write()
+                </div>
+                break;
+            case MetaDataType.Error:
+                <div class="alert alert-danger align-items-center" role="alert">
+                    <h4 class="alert-heading text-center">Oшибка!</h4>
+                    @Write()
+                </div>
+                break;
+            case MetaDataType.Warning:
+                <div class="alert alert-warning align-items-center" role="alert">
+                    <h4 class="alert-heading text-center">Предупреждение!</h4>
+                    @Write()
+                </div>
+                break;
+            default:
+                break;
+        }
+    }
+</div>
+
+@functions{
+    private object Write()
+    {
+        @if (Model.MetaData != null)
+        {
+            <p class="text-break">@Model.MetaData.Message</p>
+            <hr>
+        }
+        @if (Model.Exception != null)
+        {
+            <p class="text-break">@Model.Exception.ToString()</p>
+            <hr>
+        }
+        @if (Model.Logs != null)
+        {
+            <h6 class="text-center mb-0">Логи</h6>
+            <ul>
+                @foreach (var log in Model.Logs)
+                {
+                    <li class="text-break">@log</li>
+                }
+            </ul>
+        }
+        return null!;
+    }
+}
+

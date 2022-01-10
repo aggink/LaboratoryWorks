@@ -1,0 +1,78 @@
+﻿@using ProtectionOfInfo.WebApp.ViewModels
+@using ProtectionOfInfo.WebApp.Infrastructure.OperationResults
+@model OperationResult<List<SliderViewModel>>
+
+@{
+    var operation = OperationResult.CreateResult<object>();
+}
+
+@if (Model != null)
+{
+    if (Model.Ok)
+    {
+        <div class="container mt-5 mb-5" style="max-width:720px; min-width:320px;">
+            <div id="carousel" class="carousel slide d-inline-block" data-ride="carousel">
+                <!-- Индикаторы -->
+                <ol class="carousel-indicators">
+                    @for (int i = 0; i < Model.Result.Count; ++i)
+                    {
+                        if (i == 0)
+                        {
+                            <li data-target="#carousel" data-slide-to="@i.ToString()" class="active"></li>
+                        }
+                        else
+                        {
+                            <li data-target="#carousel" data-slide-to="@i.ToString()"></li>
+                        }
+                    }
+                </ol>
+                <div class="carousel-inner">
+                    @for (int i = 0; i < Model.Result.Count; ++i)
+                    {
+                        if (i == 0)
+                        {
+                            <div class="carousel-item active">
+                                <img class="img-fluid rounded" src="@Url.Content(Model.Result[i].Src)" alt="@Model.Result[i].Description">
+                                <div class="carousel-caption">
+                                    <h3>@Model.Result[i].Description</h3>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="carousel-item">
+                                <img class="img-fluid rounded" src="@Url.Content(Model.Result[i].Src)" alt="@Model.Result[i].Description">
+                                <div class="carousel-caption">
+                                    <h3>@Model.Result[i].Description</h3>
+                                </div>
+                            </div>
+                        }
+
+                    }
+                </div>
+                <!-- Элементы управления -->
+                <a class="carousel-control-prev" href="#carousel" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Предыдущий</span>
+                </a>
+                <a class="carousel-control-next" href="#carousel" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Следующий</span>
+                </a>
+            </div>
+     
+        </div>
+    }
+    else
+    {
+        operation.AppendLog(Model.Logs);
+        operation.MetaData = Model.MetaData;
+        operation.Exception = Model.Exception;
+        <partial name="_ErrorPartial" model='operation' />
+    }
+}
+else
+{
+    operation.MetaData = new MetaData(operation, "Данные для создания слайдера не получены", MetaDataType.Warning);
+    <partial name="_ErrorPartial" model='operation' />
+}

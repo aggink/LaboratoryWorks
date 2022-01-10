@@ -1,0 +1,87 @@
+﻿@model List<ProtectionOfInfo.WebApp.ViewModels.AccountViewModels.UpdateUserForAdminViewModel>
+@{
+    ViewData["Title"] = "Все пользователи";
+}
+
+<div class="container align-items-center mt-5">
+    <h2 class="text-center">Список имен зарегистрированных пользователей</h2>
+    <p class="text-center">Просмотр списка имен зарегистрированных пользователей и установленных для них параметров (блокировка учетной записи, включение ограничений на выбираемые пароли)</p>
+    <div asp-validation-summary="All"></div>
+    @if (Model is not null)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="text-center" style="visibility:hidden; display: none;">ID пользователя</th>
+                    <th class="text-center">Имя пользователя</th>
+                    <th class="text-center">Заблокировать уч. запись</th>
+                    <th class="text-center">Валидация пароля</th>
+                    <th class="text-center">Сохранить изменения</th>
+                    <th class="text-center">Открыть</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        @using (Html.BeginForm("UpdateUser", "Administrator", FormMethod.Post))
+                        {
+                            <td style="visibility:hidden; display: none;">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="Id" value="@user.Id" readonly>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="UserName" placeholder="Имя пользователя" value="@user.UserName" readonly>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <select class="form-control" name="BlockedUser">
+                                        @if (user.BlockedUser)
+                                        {
+                                            <option value="true" selected>Да</option>
+                                            <option value="false">Нет</option>
+
+                                        }
+                                        else
+                                        {
+                                            if (User.Identity!.Name != user.UserName)
+                                            {
+                                                <option value="true">Да</option>
+                                            }
+                                            <option value="false" selected>Нет</option>
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <select class="form-control" name="PasswordValidation">
+                                        @if (user.PasswordValidation)
+                                        {
+                                            <option value="true" selected>Да</option>
+                                            <option value="false">Нет</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="true">Да</option>
+                                            <option value="false" selected>Нет</option>
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                                <button type="submit" class="btn btn-primary btn-block">Изменить</button>
+                            </td>
+                        }
+                        <td>
+                            <a asp-controller="Administrator" asp-action="UpdateUser" asp-route-userId="@user.Id" class="btn btn-primary btn-block" role="button">Открыть</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

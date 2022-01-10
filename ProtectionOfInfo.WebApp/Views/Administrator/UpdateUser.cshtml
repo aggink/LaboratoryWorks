@@ -1,0 +1,58 @@
+﻿@model ProtectionOfInfo.WebApp.ViewModels.AccountViewModels.UpdateUserForAdminViewModel
+@{
+    ViewData["Title"] = "Редактирование данных пользователя";
+}
+
+<div class="container col-6 align-items-center mt-5">
+    <h1 class="text-center">Редактирование данных пользователя</h1>
+    <form method="post" asp-controller="Administrator" asp-action="UpdateUser">
+        <div asp-validation-summary="All"></div>
+        <div class="form-group" style="visibility:hidden; display: none;">
+            <label asp-for="Id" for="Id">Id пользователя</label>
+            <input asp-for="Id" type="text" class="form-control" id="Id" placeholder="Id пользователя" value="@Model.Id" readonly>
+        </div>
+        <div class="form-group">
+            <label asp-for="UserName" for="UserName">Имя пользователя</label>
+            <input asp-for="UserName" type="text" class="form-control" id="UserName" placeholder="Имя пользователя" value="@Model.UserName" readonly>
+        </div>
+        <div class="form-group">
+            <label asp-for="BlockedUser" for="BlockedUser">Заблокирована уч. запись</label>
+            <select asp-for="BlockedUser" class="form-control" id="BlockedUser">
+                @if (Model.BlockedUser)
+                {
+                    <option value="true" selected>Да</option>
+                    <option value="false">Нет</option>
+
+                }
+                else
+                {
+                    if (User.Identity!.Name != Model.UserName)
+                    {
+                        <option value="true">Да</option>
+                    }
+                    <option value="false" selected>Нет</option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label asp-for="PasswordValidation" for="PasswordValidation">Валидация пароля</label>
+            <select asp-for="PasswordValidation" class="form-control" id="PasswordValidation">
+                @if (Model.PasswordValidation)
+                {
+                    <option value="true" selected>Да</option>
+                    <option value="false">Нет</option>
+
+                }
+                else
+                {
+                    if (User.Identity!.Name != Model.UserName)
+                    {
+                        <option value="true">Да</option>
+                    }
+                    <option value="false" selected>Нет</option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Изменить</button>
+    </form>
+</div>

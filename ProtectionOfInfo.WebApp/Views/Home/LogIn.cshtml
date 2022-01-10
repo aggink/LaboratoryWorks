@@ -1,0 +1,23 @@
+﻿@model ProtectionOfInfo.WebApp.ViewModels.AccountViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Войти в аккаунт";
+}
+<div class="container col-6 align-items-center mt-5">
+    <h1 class="text-center">Войти в аккаунт</h1>
+    <form method="post" asp-controller="Home" asp-action="LogIn">
+        <div asp-validation-summary="All"></div>
+        <div class="form-group">
+            <label asp-for="UserName" id="UserName">Имя пользователя</label>
+            <input asp-for="UserName" type="text" class="form-control" id="UserName" placeholder="Имя пользователя">
+        </div>
+        <div class="form-group">
+            <label asp-for="Password" for="Password">Пароль</label>
+            <input asp-for="Password" type="password" class="form-control" id="Password" placeholder="Пароль">
+        </div>
+        <div class="form-check">
+            <input asp-for="RememberMe" type="checkbox" class="form-check-input" id="RememberMe">
+            <label asp-for="RememberMe" class="form-check-label" for="RememberMe">Запомнить меня</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Войти</button>
+    </form>
+</div>

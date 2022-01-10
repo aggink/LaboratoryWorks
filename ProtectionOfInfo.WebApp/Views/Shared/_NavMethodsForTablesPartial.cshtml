@@ -1,0 +1,81 @@
+﻿@using ProtectionOfInfo.WebApp.Infrastructure.OperationResults
+@using ProtectionOfInfo.WebApp.ViewModels
+@model OperationResult<NavMethodsForTablesViewModel>
+@{
+    ViewData["ErrorTitle"] = "Добавление сортировки и поиска";
+}
+
+@{
+    OperationResult operation = new OperationResult<object>();
+
+    if (Model != null && Model.Ok)
+    {
+        if (Model.Result.Sort != null)
+        {
+            <div class="conteiner dropdown row mt-5 mb-3">
+                @foreach (var item in Model.Result.Sort)
+                {
+                    <div class="btn-group col align-items-center mt-1 mb-1 mr-1 ml-1">
+                        <button role="button" type="button" class="btn btn-primary dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @item.Name
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            @foreach (var param in item.Param)
+                            {
+                                <a class="dropdown-item"
+                                   asp-controller="@item.Controller"
+                                   asp-action="@item.Action"
+                                   asp-route-TypeSort="@param.TypeSort"
+                                   asp-route-ObjectSort="@param.ObjectSort">
+                                    @param.Name
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            operation.MetaData = new MetaData(operation, "Не найдены данные для создания кнопок для сортировки инофрмации в таблице", MetaDataType.Warning);
+        }
+
+        if (Model.Result.Search != null)
+        {
+            <div class="container btn-primary text-white p-2 rounded">
+                <form class="form-inline justify-content-center" method="get" asp-controller="@Model.Result.Search.Controller" asp-action="@Model.Result.Search.Action">
+                    <div class="form-group m-2">
+                        <select class="form-control rounded" name="ObjectSearch">
+                            @foreach (var param in Model.Result.Search.Param)
+                            {
+                                <option class="rounded p-1" value="@param.ObjectSearch">@param.Name</option>
+                             }
+                        </select>
+                    </div>
+                    <input class="form-control col-6 m-2" type="text" name="Search" placeholder="@Model.Result.Search.Name">
+                    <button class="btn btn-outline-light col-3 m-2" type="submit">Поиск</button>
+                </form>
+            </div>
+        }
+        else
+        {
+            operation.MetaData = new MetaData(operation, "Ошибка при добавлении на страницу кнопок для сортировки и поиска информации в таблицы", MetaDataType.Warning);
+            <partial name="_ErrorPartial" model='operation' />
+        }
+    }
+    else
+    {
+        if (Model != null && !Model.Ok)
+        {
+            operation.AppendLog(Model.Logs);
+            operation.MetaData = Model.MetaData;
+            operation.Exception = Model.Exception;
+            <partial name="_ErrorPartial" model='operation' />
+        }
+        else
+        {
+            operation.MetaData = new MetaData(operation, "Данные для создания кнопок сортировки и поиска не получены", MetaDataType.Warning);
+            <partial name="_ErrorPartial" model='operation' />
+        }
+    }
+}

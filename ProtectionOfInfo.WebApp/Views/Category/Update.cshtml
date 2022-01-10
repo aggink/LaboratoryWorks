@@ -1,0 +1,41 @@
+﻿@using ProtectionOfInfo.WebApp.Data.Configurations
+@using ProtectionOfInfo.WebApp.ViewModels.CatalogViewModels.CategoryViewModels
+@using ProtectionOfInfo.WebApp.Infrastructure.OperationResults
+@model OperationResult<CategoryUpdateViewModel>
+@{
+    ViewData["Title"] = "Редактирование категории";
+    ViewData["MiniTitle"] = "Редактирование данных категории";
+    ViewData["ErrorTitle"] = ViewData["MiniTitle"];
+}
+
+@if (Model != null && !Model.Ok)
+{
+    var operation = new OperationResult<object>();
+    operation.MetaData = Model.MetaData;
+    operation.Exception = Model.Exception;
+    operation.AppendLog(Model.Logs);
+    <partial name="_ErrorPartial" model='operation' />
+}
+
+@if (Model != null && Model.Ok)
+{
+    <div class="container col-6 align-items-center mt-5">
+        <h1 class="text-center">@ViewData["MiniTitle"]</h1>
+        <form method="post" asp-controller="Category" asp-action="Update">
+            <div asp-validation-summary="All"></div>
+            <div class="form-group" style="visibility:hidden; display: none;">
+                <label asp-for="Result.Id" for="Name">Id</label>
+                <input asp-for="Result.Id" type="text" class="form-control" id="Id" name="Id" placeholder="Id" value="@Model!.Result.Id.ToString()">
+            </div>
+            <div class="form-group">
+                <label asp-for="Result.Name" for="Name">@EntitiesModelsConfiguration.CategoryName</label>
+                <input asp-for="Result.Name" type="text" class="form-control" id="Name" name="Name" placeholder="@EntitiesModelsConfiguration.CategoryName" value="@Model!.Result.Name">
+            </div>
+            <div class="form-group">
+                <label asp-for="Result.Synopsis" for="Synopsis">@EntitiesModelsConfiguration.CategorySynopsis</label>
+                <textarea asp-for="Result.Synopsis" class="form-control" id="Synopsis" name="Synopsis" rows="10" placeholder="@EntitiesModelsConfiguration.CategorySynopsis">@Model!.Result.Synopsis</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Изменить данные категории</button>
+        </form>
+    </div>
+}

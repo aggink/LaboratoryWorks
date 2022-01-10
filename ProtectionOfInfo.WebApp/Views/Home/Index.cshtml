@@ -1,0 +1,167 @@
+﻿@using ProtectionOfInfo.WebApp.ViewModels
+@using ProtectionOfInfo.WebApp.ViewModels.CatalogViewModels.BookViewModels
+@using ProtectionOfInfo.WebApp.Data.Configurations
+@using ProtectionOfInfo.WebApp.Infrastructure.OperationResults
+@model OperationResult<List<BookViewModel>>
+@{
+    ViewData["Title"] = "Начальная страница";
+    ViewData["ErrorTitle"] = "";
+
+    List<SliderViewModel> img = new List<SliderViewModel>()
+    {
+        new SliderViewModel("AmazingBook.jpg", "Чудесный мир"),
+        new SliderViewModel("MorningBook.jpg", "Восход"),
+        new SliderViewModel("OldBook.jpg", "Сквозь время"),
+        new SliderViewModel("ReadBook.jpg", "Познай прекрасное")
+    };
+    var sliderOperation = OperationResult.CreateResult<List<SliderViewModel>>(img);
+}
+
+<partial name="_SliderPartial" model='sliderOperation' />
+
+@if (Model != null && !Model.Ok || Model!.MetaData.Type != MetaDataType.Success)
+{
+    var operation = new OperationResult<object>();
+    operation.MetaData = Model.MetaData;
+    operation.Exception = Model.Exception;
+    operation.AppendLog(Model.Logs);
+    <partial name="_ErrorPartial" model='operation' />
+}
+
+@if (Model != null)
+{
+    var operation = OperationResult.CreateResult<object>();
+
+    if (Model.Ok)
+    {
+        var listSort = new List<NavMethodsForTablesViewModel<ParamSort>>() {
+            new NavMethodsForTablesViewModel<ParamSort>()
+            {
+                Name = $"Сортировка по Названию книги",
+                Controller = "Book",
+                Action = "SortWithOtherEntities",
+                Param = new List<ParamSort>()
+                {
+                    new ParamSort("от a до я", "Name", TypeSort.OrderBy),
+                    new ParamSort("от я до а", "Name", TypeSort.OrderByDescending)
+                }
+            },
+            new NavMethodsForTablesViewModel<ParamSort>()
+            {
+                Name = "Сортировка по Цене",
+                Controller = "Book",
+                Action = "SortWithOtherEntities",
+                Param = new List<ParamSort>()
+                {
+                    new ParamSort("по возрастанию", "Price", TypeSort.OrderBy),
+                    new ParamSort("по убыванию", "Price", TypeSort.OrderByDescending)
+                }
+            },
+            new NavMethodsForTablesViewModel<ParamSort>()
+            {
+                Name = "Сортировка по ФИО автора",
+                Controller = "Book",
+                Action = "SortWithOtherEntities",
+                Param = new List<ParamSort>()
+                {
+                    new ParamSort("по возрастанию", "AuthorName", TypeSort.OrderBy),
+                    new ParamSort("по убыванию", "AuthorName", TypeSort.OrderByDescending)
+                }
+            },
+            new NavMethodsForTablesViewModel<ParamSort>()
+            {
+                Name = "Сортировка по названию издательства",
+                Controller = "Book",
+                Action = "SortWithOtherEntities",
+                Param = new List<ParamSort>()
+                {
+                    new ParamSort("по возрастанию", "PublisherName", TypeSort.OrderBy),
+                    new ParamSort("по убыванию", "PublisherName", TypeSort.OrderByDescending)
+                }
+            },
+            new NavMethodsForTablesViewModel<ParamSort>()
+            {
+                Name = "Сортировка по названию категории",
+                Controller = "Book",
+                Action = "SortWithOtherEntities",
+                Param = new List<ParamSort>()
+                {
+                    new ParamSort("по возрастанию", "CategoryName", TypeSort.OrderBy),
+                    new ParamSort("по убыванию", "CategoryName", TypeSort.OrderByDescending)
+                }
+            }
+        };
+
+        var Search = new NavMethodsForTablesViewModel<ParamSearch>()
+        {
+            Name = "Поиск по таблице Книги",
+            Controller = "Book",
+            Action = "SearchWithOtherEntities",
+            Param = new List<ParamSearch>()
+            {
+                new ParamSearch("Всем полям", "All"),
+                new ParamSearch("Названию книги", "Name"),
+                new ParamSearch("По цене", "Price"),
+                new ParamSearch("По названию издательства", "PublisherName"),
+                new ParamSearch("По категории", "CategoryName"),
+                new ParamSearch("По ФИО автора", "AuthorName")
+            }
+        };
+
+        var operationSortSearch = OperationResult.CreateResult<NavMethodsForTablesViewModel>(new NavMethodsForTablesViewModel(listSort, Search));
+        <partial name="_NavMethodsForTablesPartial" model='operationSortSearch' />
+
+        <div class="container mt-3">
+            <h2 class="text-center mb-4">Каталог книг</h2>
+            @foreach (var item in Model.Result)
+            {
+                <div class="container col-8 text-center border border-primary rounded mb-3">
+                    <img class=" img-fluid rounded mt-2 mb-2" src="@Url.Content("~/images/NoNameBook.jpg")" alt="Книга">
+                    <h4 class="mt-2 text-center">@item.Name</h4>
+                    <table class="table-responsive text-center p-3">
+                        <tbody>
+                            <tr class="table-primary">
+                                <td class="align-middle" colspan="2">Автор</td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">@EntitiesModelsConfiguration.AuthorName</td>
+                                <td class="align-middle">@item.AuthorViewModel!.Name</td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">@EntitiesModelsConfiguration.AuthorBiography</td>
+                                <td class="align-middle">@item.AuthorViewModel!.Biography</td>
+                            </tr>
+
+                            <tr class="table-primary">
+                                <td class="align-middle" colspan="2">Литературный жанр</td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">@EntitiesModelsConfiguration.CategoryName</td>
+                                <td class="align-middle">@item.CategoryViewModel!.Name</td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">@EntitiesModelsConfiguration.CategorySynopsis</td>
+                                <td class="align-middle">@item.CategoryViewModel!.Synopsis</td>
+                            </tr>
+
+                            <tr class="table-primary">
+                                <td class="align-middle" colspan="2">Издательство</td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">@EntitiesModelsConfiguration.PublisherName</td>
+                                <td class="align-middle">@item.PublisherViewModel!.Name</td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">@EntitiesModelsConfiguration.PublisherDescription</td>
+                                <td class="align-middle">@item.PublisherViewModel!.Description</td>
+                            </tr>
+                            <tr class="table-primary">
+                                <td class="pull-right" colspan="2">ЦЕНА: @Math.Round(item.Price, 2) руб.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    }
+}

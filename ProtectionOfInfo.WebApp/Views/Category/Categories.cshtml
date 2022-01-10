@@ -1,0 +1,102 @@
+﻿@using ProtectionOfInfo.WebApp.Data.Configurations
+@using ProtectionOfInfo.WebApp.ViewModels
+@using ProtectionOfInfo.WebApp.ViewModels.CatalogViewModels.CategoryViewModels
+@using ProtectionOfInfo.WebApp.Infrastructure.OperationResults
+@model OperationResult<List<CategoryViewModel>>
+@{
+    ViewData["Title"] = "Все категории";
+    ViewData["MiniTitle"] = "Список всех добавленных категорий";
+    ViewData["ErrorTitle"] = ViewData["MiniTitle"];
+}
+
+<partial name="_NavAdminPartial" />
+
+@if (Model != null && !Model.Ok || Model!.MetaData.Type != MetaDataType.Success)
+{
+    var operation = new OperationResult<object>();
+    operation.MetaData = Model.MetaData;
+    operation.Exception = Model.Exception;
+    operation.AppendLog(Model.Logs);
+    <partial name="_ErrorPartial" model='operation' />
+}
+
+@if (Model != null && Model!.Ok)
+{
+    var listSort = new List<NavMethodsForTablesViewModel<ParamSort>>() {
+        new NavMethodsForTablesViewModel<ParamSort>()
+        {
+            Name = $"Сортировка по Названию категории",
+            Controller = "Category",
+            Action = "Sort",
+            Param = new List<ParamSort>()
+{
+                new ParamSort("от a до я", "Name", TypeSort.OrderBy),
+                new ParamSort("от я до а", "Name", TypeSort.OrderByDescending)
+            }
+        },
+        new NavMethodsForTablesViewModel<ParamSort>()
+        {
+            Name = "Сортировка по Описанию категории",
+            Controller = "Category",
+            Action = "Sort",
+            Param = new List<ParamSort>()
+{
+                new ParamSort("от а до я", "Synopsis", TypeSort.OrderBy),
+                new ParamSort("от я до а", "Synopsis", TypeSort.OrderByDescending)
+            }
+        }
+    };
+
+    var Search = new NavMethodsForTablesViewModel<ParamSearch>()
+    {
+        Name = "Поиск по таблице Категории",
+        Controller = "Book",
+        Action = "Search",
+        Param = new List<ParamSearch>()
+{
+            new ParamSearch("Всем полям", "All"),
+            new ParamSearch("Названию названию категории", "Name"),
+            new ParamSearch("По описанию категории", "Synopsis")
+        }
+    };
+
+    var operation = OperationResult.CreateResult<NavMethodsForTablesViewModel>(new NavMethodsForTablesViewModel(listSort, Search));
+    <partial name="_NavMethodsForTablesPartial" model='operation' />
+
+
+    <div class="container align-items-center mt-5">
+        <h2 class="text-center">@ViewData["MiniTitle"]</h2>
+        <p class="text-center">Просмотр списка категорий (редактирование и удаление категорий)</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="text-center" scope="col">#</th>
+                    <th class="text-center" scope="col">@EntitiesModelsConfiguration.CategoryName</th>
+                    <th class="text-center" scope="col">@EntitiesModelsConfiguration.CategorySynopsis</th>
+                    <th class="text-center" scope="col">Изменить</th>
+                    <th class="text-center" scope="col">Удалить</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int i = 1;
+                    foreach (var value in Model.Result)
+                    {
+                        <tr>
+                            <th class="text-center" scope="row">@i.ToString()</th>
+                            <td class="text-center" scope="row">@value.Name</td>
+                            <td class="text-center" scope="row">@value.Synopsis</td>
+                            <td class="text-center" scope="row">
+                                <a asp-controller="Category" asp-action="Update" asp-route-Id="@value.Id.ToString()" class="btn btn-primary btn-block" role="button">Изменить</a>
+                            </td>
+                            <td class="text-center" scope="row">
+                                <a asp-controller="Category" asp-action="Delete" asp-route-Id="@value.Id.ToString()" class="btn btn-primary btn-block" role="button">Удалить</a>
+                            </td>
+                        </tr>
+                        i++;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+}

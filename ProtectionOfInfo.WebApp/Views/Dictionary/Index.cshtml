@@ -1,0 +1,141 @@
+﻿@using ProtectionOfInfo.WebApp.Infrastructure.OperationResults
+@using ProtectionOfInfo.WebApp.ViewModels.DictionaryViewModels
+@model OperationResult<DictionaryViewModel>
+@{
+    ViewData["Title"] = "Словарь";
+    ViewData["ErrorTitle"] = "Ошибка при выполнении запроса";
+}
+
+<div class="container col-6 align-items-center mt-5">
+    <h1 class="text-center">Словарь</h1>
+    <form method="get" asp-controller="Dictionary" asp-action="Search">
+        <div class="form-group">
+            <label for="word">Введите слово</label>
+            <input name="word" type="text" class="form-control" id="word" placeholder="слово">
+        </div>
+        <div class="form-group">
+            <label for="code">Выберите язык</label>
+            <select name="code" class="form-control" id="code">
+                @foreach (KeyValuePair<string, string> code in LanguageCodes.DictionaryCodes())
+                {
+                    <option value="@code.Value">@code.Key</option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Найти</button>
+    </form>
+    <a asp-controller="Dictionary" asp-action="GetJsonSearch" asp-route-word="description" asp-route-code="en" target="_blank" class="btn btn-primary btn-block active mt-2" role="button" aria-pressed="true">Получить ответ в формате JSON</a>
+</div>
+
+@if (Model != null && !Model.Ok)
+{
+    var operation = OperationResult.CreateResult<object>();
+    operation.AppendLog(Model.Logs);
+    operation.MetaData = Model.MetaData;
+    operation.Exception = operation.Exception;
+
+    <partial name="_ErrorPartial" model='operation' />
+}
+
+@if (Model != null && Model.Ok)
+{
+    <div class="container mt-5">
+        <div class="container col-8 text-center border border-primary rounded mb-3">
+            <h4 class="mt-2 p-3 text-center">Слово</h4>
+            <table class="table text-center p-3">
+                <tbody>
+                    <tr>
+                        <td class="align-middle">Слово</td>
+                        @if (!string.IsNullOrEmpty(Model.Result.Word))
+                        {
+                            <td class="align-middle">@Model.Result.Word</td>
+                        }
+                        else
+                        {
+                            <td class="align-middle">Не найдено!</td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="align-middle">Образовано от</td>
+                        @if (!string.IsNullOrEmpty(Model.Result.Origin))
+                        {
+                            <td class="align-middle">@Model.Result.Origin</td>
+                        }
+                        else
+                        {
+                            <td class="align-middle">Не найдено!</td>
+                        }
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    
+        @if (Model.Result.Meanings != null && Model.Result.Meanings.Count != 0)
+        {
+            foreach (var meaning in Model.Result.Meanings)
+            {
+                if (meaning.Definitions != null && meaning.Definitions.Count != 0)
+                {
+                    foreach (var definition in meaning.Definitions)
+                    {
+                        <div class="container col-8 text-center border border-primary rounded mb-3">
+                            <h4 class="mt-2 p-3 text-center">Значение слова</h4>
+                            <table class="table text-center p-3">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row"></th>
+                                        <td class="align-middle">Определение</td>
+                                        @if (!string.IsNullOrEmpty(definition.Definition))
+                                        {
+                                            <td class="align-middle">@definition.Definition</td>
+                                        }
+                                        else
+                                        {
+                                            <td class="align-middle">Не найдено!</td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <th scope="row"></th>
+                                        <td class="align-middle">Пример</td>
+                                        @if (!string.IsNullOrEmpty(definition.Example))
+                                        {
+                                            <td class="align-middle">@definition.Example</td>
+                                        }
+                                        else
+                                        {
+                                            <td class="align-middle">Не найдено!</td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <th scope="row"></th>
+                                        <td class="align-middle">Синонимы</td>
+                                        @if (definition.Synonyms != null && definition.Synonyms.Count != 0)
+                                        {
+                                            <td class="align-middle">@String.Join(", ", definition.Synonyms.ToArray())</td>
+                                        }
+                                        else
+                                        {
+                                            <td class="align-middle">Не найдено!</td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <th scope="row"></th>
+                                        <td class="align-middle">Антонимы</td>
+                                        @if (definition.Antonyms != null && definition.Antonyms.Count != 0)
+                                        {
+                                            <td class="align-middle">@String.Join(", ", definition.Antonyms.ToArray())</td>
+                                        }
+                                        else
+                                        {
+                                            <td class="align-middle">Не найдено!</td>
+                                        }
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                }
+            }
+        }
+    </div>
+}
