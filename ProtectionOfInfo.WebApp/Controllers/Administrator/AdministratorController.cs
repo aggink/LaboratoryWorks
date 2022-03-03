@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ProtectionOfInfo.WebApp.Data;
 using ProtectionOfInfo.WebApp.Data.Entities;
+using ProtectionOfInfo.WebApp.Infrastructure.OperationResults;
 using ProtectionOfInfo.WebApp.Infrastructure.Services.PasswordValidatorsService;
+using ProtectionOfInfo.WebApp.Infrastructure.Services.PortInfoService;
 using ProtectionOfInfo.WebApp.ViewModels.AccountViewModels;
+using ProtectionOfInfo.WebApp.ViewModels.PortInfoViewModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,17 +26,19 @@ namespace ProtectionOfInfo.WebApp.Controllers.Administrator
         // Регистрация новых пользователей
         private readonly UserManager<MyIdentityUser> _userManager;
         private readonly IMapper _mapper;
-        private IMyPasswordValidatorService _passwordMyValidator;
+        private readonly IMyPasswordValidatorService _passwordMyValidator;
+        private readonly IPortInfoService _portInfoService;
 
         public AdministratorController(
             UserManager<MyIdentityUser> userManager, 
             IMapper mapper, 
-            IMyPasswordValidatorService myPasswordValidator)
+            IMyPasswordValidatorService myPasswordValidator,
+            IPortInfoService portInfoService)
         {
             _userManager = userManager;
             _mapper = mapper;
             _passwordMyValidator = myPasswordValidator;
-
+            _portInfoService = portInfoService;
         }
 
         [HttpGet]
@@ -218,6 +223,77 @@ namespace ProtectionOfInfo.WebApp.Controllers.Administrator
             }
 
             return View(modelUser);
+        }
+
+        #endregion
+
+        #region GetInfoPorts
+        [HttpGet]
+        public IActionResult GetInfoPorts()
+        {
+            var operation = OperationResult.CreateResult<List<PortInfoViewModel>>();
+
+            var result = _portInfoService.GetActiveTcpConnections();
+            if(result == null || result.Count() == 0)
+            {
+                operation.AddInfo("Активных подключений TCP не обнаружено");
+                result = new List<PortInfoViewModel>();
+            }
+            else
+            {
+                operation.AddSuccess("Список активных TCP подключений получен");
+                operation.Result = result;
+            }
+            
+            return View(operation);
+        }
+
+        [HttpGet]
+        public IActionResult GetInfoActiveTCPListeners()
+        {
+            ViewData["Title"] = "Активные прослушиватели TCP";
+            ViewData["MiniTitle"] = "Список активных прослушивателей TCP";
+            ViewData["ErrorTitle"] = ViewData["MiniTitle"];
+
+            var operation = OperationResult.CreateResult<List<EndPointViewModel>>();
+
+            var result = _portInfoService.GetActiveTcpListeners();
+            if (result == null || result.Count() == 0)
+            {
+                operation.AddInfo("Активных прослушивателей TCP не обнаружено");
+                result = new List<EndPointViewModel>();
+            }
+            else
+            {
+                operation.AddSuccess("Список активных активных прослушивателей TCP получен");
+                operation.Result = result;
+            }
+
+            return View("GetInfoActiveListeners", operation);
+        }
+
+        [HttpGet]
+        public IActionResult GetInfoActiveUDPListeners()
+        {
+            ViewData["Title"] = "Активные прослушиватели UDP";
+            ViewData["MiniTitle"] = "Список активных прослушивателей UDP";
+            ViewData["ErrorTitle"] = ViewData["MiniTitle"];
+
+            var operation = OperationResult.CreateResult<List<EndPointViewModel>>();
+
+            var result = _portInfoService.GetActiveUdpListeners();
+            if (result == null || result.Count() == 0)
+            {
+                operation.AddInfo("Активных прослушивателей UDP не обнаружено");
+                result = new List<EndPointViewModel>();
+            }
+            else
+            {
+                operation.AddSuccess("Список активных активных прослушивателей UDP получен");
+                operation.Result = result;
+            }
+
+            return View("GetInfoActiveListeners", operation);
         }
 
         #endregion

@@ -9,13 +9,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ProtectionOfInfo.WebApp.Data;
 using ProtectionOfInfo.WebApp.Data.Entities;
-using ProtectionOfInfo.WebApp.Infrastructure.Services.CryptographyService;
 using ProtectionOfInfo.WebApp.Infrastructure.Managers.Base;
-using ProtectionOfInfo.WebApp.Infrastructure.Services.PasswordValidatorsService;
 using ProtectionOfInfo.WebApp.Infrastructure.Providers.Base;
 using ProtectionOfInfo.WebApp.Infrastructure.Repositories.Base;
-using System;
+using ProtectionOfInfo.WebApp.Infrastructure.Services.ConvertToExcelService;
+using ProtectionOfInfo.WebApp.Infrastructure.Services.CryptographyService;
+using ProtectionOfInfo.WebApp.Infrastructure.Services.CryptographyService.Interface;
 using ProtectionOfInfo.WebApp.Infrastructure.Services.DictionaryApiService;
+using ProtectionOfInfo.WebApp.Infrastructure.Services.PasswordValidatorsService;
+using ProtectionOfInfo.WebApp.Infrastructure.Services.PortInfoService;
+using System;
 
 namespace ProtectionOfInfo.WebApp
 {
@@ -95,10 +98,16 @@ namespace ProtectionOfInfo.WebApp
             // dependency injection
 
             services.AddTransient<IMyPasswordValidatorService, PasswordValidatorService>();
+            
             // ---
             services.AddTransient<IDataEncryptionService, DataEncryptionService>();
             services.AddTransient<IMyUserRepository, UserRepository>();
             services.AddTransient<IDictionaryApi, DictionaryApi>();
+            
+            /// // aggink: update summary - 01.03.2022 1:18:51
+            services.AddTransient<ICryptographyService, CryptographyService>();
+            services.AddTransient<IPortInfoService, PortInfoService>();
+            services.AddTransient<IConvertToExcel, ConvertToExcel>();
             // ---
 
             RepositoryRegistration.AddScopedRepositories(services);

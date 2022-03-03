@@ -1,0 +1,44 @@
+﻿@using ProtectionOfInfo.WebApp.Infrastructure.OperationResults
+@using ProtectionOfInfo.WebApp.ViewModels.PortInfoViewModel
+@model OperationResult<List<EndPointViewModel>>
+
+<partial name="_NavAdminPartial" />
+
+@if (Model != null && !Model.Ok || Model!.MetaData.Type != MetaDataType.Success)
+{
+    var operation = new OperationResult<object>();
+    operation.MetaData = Model.MetaData;
+    operation.Exception = Model.Exception;
+    operation.AppendLog(Model.Logs);
+    <partial name="_ErrorPartial" model='operation' />
+}
+
+@if (Model != null && Model.Ok)
+{
+    <div class="container align-items-center mt-5">
+        <h2 class="text-center">@ViewData["MiniTitle"]</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="text-center" scope="col">Номер порта</th>
+                    <th class="text-center" scope="col">Семейство IP-адресов</th>
+                    <th class="text-center" scope="col">IP-адресс конечной точки</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int i = 1;
+                    foreach (var value in Model.Result)
+                    {
+                        <tr>
+                            <th class="text-center" scope="row">@value.Port</th>
+                            <td class="text-center" scope="row">@value.AddressFamily</td>
+                            <td class="text-center" scope="row">@value.Address</td>
+                        </tr>
+                        i++;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+}

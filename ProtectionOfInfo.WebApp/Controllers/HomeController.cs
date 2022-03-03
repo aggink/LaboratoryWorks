@@ -30,9 +30,6 @@ namespace ProtectionOfInfo.WebApp.Controllers
         private readonly IMyPasswordValidatorService _passwordMyValidator;
         private readonly IBookManager _bookManager;
 
-        //private const string SessionKeyHashPassword = "_HashPassword";
-        //private const string SessionKeyUserName = "_UserName";
-
         public HomeController(
             UserManager<MyIdentityUser> userManager, 
             SignInManager<MyIdentityUser> signInManager, 
@@ -43,12 +40,9 @@ namespace ProtectionOfInfo.WebApp.Controllers
         {
             _userManager = userManager;
             _signInManager = signInManager;
-
             _logger = logger;
             _mapper = mapper;
-
             _passwordMyValidator = passwordMyValidator;
-
             _bookManager = bookManager;
         }
 
@@ -78,6 +72,11 @@ namespace ProtectionOfInfo.WebApp.Controllers
         }
 
         public IActionResult FundamentalsOfNewInformationTechnologies()
+        {
+            return View();
+        }
+
+        public IActionResult CourseWork()
         {
             return View();
         }
