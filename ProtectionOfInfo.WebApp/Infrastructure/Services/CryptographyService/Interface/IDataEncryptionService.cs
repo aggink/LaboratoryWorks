@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ProtectionOfInfo.WebApp.Infrastructure.Services.CryptographyService
+﻿namespace ProtectionOfInfo.WebApp.Infrastructure.Services.CryptographyService
 {
     public interface IDataEncryptionService
     {

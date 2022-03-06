@@ -108,6 +108,7 @@ namespace ProtectionOfInfo.WebApp
             services.AddTransient<ICryptographyService, CryptographyService>();
             services.AddTransient<IPortInfoService, PortInfoService>();
             services.AddTransient<IConvertToExcel, ConvertToExcel>();
+            services.AddTransient<ISettingEDSFileService, SettingEDSFileService>();
             // ---
 
             RepositoryRegistration.AddScopedRepositories(services);

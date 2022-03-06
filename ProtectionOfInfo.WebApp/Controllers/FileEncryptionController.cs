@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProtectionOfInfo.WebApp.Infrastructure.OperationResults;
 using ProtectionOfInfo.WebApp.Infrastructure.Services.CryptographyService.Interface;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -17,9 +18,11 @@ namespace ProtectionOfInfo.WebApp.Controllers.User
     public class FileEncryptionController : Controller
     {
         private readonly ICryptographyService _cryptographyService;
-        public FileEncryptionController(ICryptographyService cryptographyService)
+        private readonly ISettingEDSFileService _settingEDSFileService;
+        public FileEncryptionController(ICryptographyService cryptographyService, ISettingEDSFileService settingEDSFileService)
         {
             _cryptographyService = cryptographyService;
+            _settingEDSFileService = settingEDSFileService;
         }
 
         [HttpGet]
@@ -35,7 +38,7 @@ namespace ProtectionOfInfo.WebApp.Controllers.User
         {
             var operation = OperationResult.CreateResult<FileContentResult>();
 
-            if (CheckValid(operation, uploadedFile, password, algorithm))
+            if (CheckValidEncrypt(operation, uploadedFile, password, algorithm))
             {
                 return View(nameof(FileEncryption), operation);
             }
@@ -74,7 +77,7 @@ namespace ProtectionOfInfo.WebApp.Controllers.User
         {
             var operation = OperationResult.CreateResult<FileContentResult>();
 
-            if (CheckValid(operation, uploadedFile, password, ""))
+            if (CheckValidEncrypt(operation, uploadedFile, password, ""))
             {
                 return View(nameof(FileEncryption), operation);
             }
@@ -108,7 +111,7 @@ namespace ProtectionOfInfo.WebApp.Controllers.User
             }
         }
 
-        private bool CheckValid(OperationResult<FileContentResult> operation, IFormFile uploadedFile, string password, string algorithm)
+        private bool CheckValidEncrypt(OperationResult<FileContentResult> operation, IFormFile uploadedFile, string password, string algorithm)
         {
             bool error = false;
 
@@ -137,6 +140,131 @@ namespace ProtectionOfInfo.WebApp.Controllers.User
             }
 
             return error;
+        }
+
+        #endregion
+
+        #region SignFiles 
+
+        public IActionResult DigitalSignature()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> CreateСertificate(int months = 3)
+        {
+            var operation = OperationResult.CreateResult<bool>();
+            if(!ModelState.IsValid)
+            {
+                operation.AddError("Ошибка при обработке введенных данных");
+                return View(nameof(DigitalSignature), operation);
+            }
+
+            var archive = await _settingEDSFileService.CreateСertificateAsync(months);
+            if(archive == null)
+            {
+                operation.AddError("При создании сертификата произошла ошибка");
+                return View(nameof(DigitalSignature), operation);
+            }
+
+            return File(archive.File, $"application/{archive.Extension}", archive.FileName);
+        }
+
+        public async Task<IActionResult> SignFile(IFormFile fileForSign, IFormFile privateKey, string passwordForSign)
+        {
+            var operation = CheckValidSign(fileForSign, privateKey, passwordForSign);
+            if (!operation.Ok)
+            {
+                return View(nameof(DigitalSignature), operation);
+            }
+
+            var signFile = await _settingEDSFileService.SignFileAsync(fileForSign, privateKey, passwordForSign);
+            if(signFile == null)
+            {
+                operation.AddError("При подписании файла произошла ошибка");
+                return View(nameof(DigitalSignature), operation);
+            }
+
+            return File(signFile.File, $"application/{signFile.Extension}", signFile.FileName);
+        }
+
+        public async Task<IActionResult> CheckSignFile(IFormFile fileForCheck, IFormFile publicKey, string passwordForCheck)
+        {
+            var operation = CheckValidSign(fileForCheck, publicKey, passwordForCheck);
+            if (!operation.Ok)
+            {
+                return View(nameof(DigitalSignature), operation);
+            }
+
+            var checkSign = await _settingEDSFileService.CheckSignFileAsync(fileForCheck, publicKey, passwordForCheck);
+            if(checkSign)
+            {
+                operation.AddSuccess("Файл прошел проверку ЭЦП");
+            }
+            else
+            {
+                operation.AddError("Файл не прошел проверку ЭЦП");
+            }
+
+            return View(nameof(DigitalSignature), operation);
+        }
+
+        public async Task<IActionResult> GetOriginalFile(IFormFile fileForDelete)
+        {
+            var operation = OperationResult.CreateResult<bool>();
+            if (!ModelState.IsValid)
+            {
+                operation.AddError("Ошибка при обработке введенных данных");
+                return View(nameof(DigitalSignature), operation);
+            }
+
+            if (fileForDelete == null)
+            {
+                operation.AddError("Файл для подписания не найден");
+                return View(nameof(DigitalSignature), operation);
+            }
+
+            var originFile = await _settingEDSFileService.GetOriginalFileAsync(fileForDelete);
+            if (originFile == null)
+            {
+                operation.AddError("При преобразовании файла к исходному виду произошла ошибка");
+                operation.Result = false;
+                return View(nameof(DigitalSignature), operation);
+            }
+
+            return File(originFile.File, $"application/{originFile.Extension}", originFile.FileName);
+        }
+
+        private OperationResult<bool> CheckValidSign(IFormFile file, IFormFile key, string password)
+        {
+            var operation = OperationResult.CreateResult<bool>();
+            operation.Result = true;
+
+            if (!ModelState.IsValid)
+            {
+                operation.AddError("Ошибка при обработке введенных данных");
+                operation.Result = false;
+            }
+
+            if (file == null)
+            {
+                operation.AddError("Файл для подписания не найден");
+                operation.Result = false;
+            }
+
+            if (key == null)
+            {
+                operation.AddError("Файл с приватным ключом не найден");
+                operation.Result = false;
+            }
+
+            if (String.IsNullOrEmpty(password))
+            {
+                operation.AddError("Пароль не задан");
+                operation.Result = false;
+            }
+
+            return operation;
         }
 
         #endregion
