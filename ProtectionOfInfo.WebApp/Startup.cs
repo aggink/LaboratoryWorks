@@ -13,6 +13,7 @@ using ProtectionOfInfo.WebApp.Infrastructure.Managers.Base;
 using ProtectionOfInfo.WebApp.Infrastructure.Providers.Base;
 using ProtectionOfInfo.WebApp.Infrastructure.Repositories.Base;
 using ProtectionOfInfo.WebApp.Infrastructure.Services.ConvertToExcelService;
+using ProtectionOfInfo.WebApp.Infrastructure.Services.ConvertToWordService;
 using ProtectionOfInfo.WebApp.Infrastructure.Services.CryptographyService;
 using ProtectionOfInfo.WebApp.Infrastructure.Services.CryptographyService.Interface;
 using ProtectionOfInfo.WebApp.Infrastructure.Services.DictionaryApiService;
@@ -109,6 +110,8 @@ namespace ProtectionOfInfo.WebApp
             services.AddTransient<IPortInfoService, PortInfoService>();
             services.AddTransient<IConvertToExcel, ConvertToExcel>();
             services.AddTransient<ISettingEDSFileService, SettingEDSFileService>();
+            /// // aggink: update summary - 19.03.2022 1:45:29
+            services.AddTransient<IConvertToWord, ConvertToWord>();
             // ---
 
             RepositoryRegistration.AddScopedRepositories(services);

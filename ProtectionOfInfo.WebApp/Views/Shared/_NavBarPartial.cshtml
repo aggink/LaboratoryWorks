@@ -28,8 +28,15 @@
             <li class="nav-item">
                 <a class="nav-link" asp-controller="FileEncryption" asp-action="DigitalSignature">ЭЦП</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" asp-controller="ConvertToExcel" asp-action="GetBooksExcel">Скачать прайс-лист</a>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown"
+                   role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor:pointer;">
+                     Скачать файлы
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" asp-controller="ConvertToFile" asp-action="GetBooksExcel">Скачать прайс-лист</a>
+                        <a class="dropdown-item" asp-controller="ConvertToFile" asp-action="GetCheck">Скачать чек</a>
+                </div>
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown"
