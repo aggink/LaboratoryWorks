@@ -253,7 +253,7 @@ namespace ProtectionOfInfo.WebApp.Controllers
                 {
                     foreach (var message in messages)
                     {
-                        var file = await fileRepository.GetFirstOrDefaultAsync(predicate: x => x.Id == message.Id);
+                        var file = await fileRepository.GetFirstOrDefaultAsync(predicate: x => x.Id == message.FileId);
                         if(file != null)
                         {
                             fileRepository.Delete(file);
