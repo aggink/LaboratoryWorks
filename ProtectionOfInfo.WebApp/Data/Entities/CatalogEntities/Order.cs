@@ -11,7 +11,5 @@ namespace ProtectionOfInfo.WebApp.Data.CatalogEntities
         public decimal Price { get; set; }
         public string Books { get; set; } = null!;
         public string UserId { get; set; } = null!;
-        [ForeignKey(nameof(UserId))]
-        public MyIdentityUser? User { get; set; }
     }
 }

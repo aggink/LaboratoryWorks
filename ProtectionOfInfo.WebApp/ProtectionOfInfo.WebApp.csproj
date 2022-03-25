@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Views\Chat\Chat.cshtml" />
     <None Include="Views\FileEncryption\FileEncryption.cshtml" />
   </ItemGroup>
 
@@ -25,6 +26,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="6.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.3">
       <PrivateAssets>all</PrivateAssets>
@@ -36,6 +38,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Data\Migrations\CatalogDbContextMigrations\" />
+    <Folder Include="Data\Migrations\ChatDbContextMigrations\" />
+    <Folder Include="Data\Migrations\MyKeysDbContextMigrations\" />
+    <Folder Include="Data\Migrations\UserDbContextMigrations\" />
     <Folder Include="wwwroot\certificates\" />
     <Folder Include="wwwroot\documents\" />
   </ItemGroup>

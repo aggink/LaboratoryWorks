@@ -136,15 +136,15 @@ namespace ProtectionOfInfo.WebApp.Controllers
 
                 var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false); // <-- false - блокировка в случае ошибки входа
 
-                if (user.FirstAccess)
-                {
-                    return RedirectToAction("UpdatePassword", "Home");
-                }
-
                 if (!result.Succeeded)
                 {
                     ModelState.AddModelError("", "Неправильный логин и (или) пароль!");
                     return View(model);
+                }
+
+                if (user.FirstAccess)
+                {
+                    return RedirectToAction("UpdatePassword", "Home");
                 }
 
                 var passwordValid = _passwordMyValidator.Validate(model.Password!);

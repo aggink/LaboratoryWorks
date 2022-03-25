@@ -27,7 +27,6 @@ namespace ProtectionOfInfo.WebApp
                 using(var scope = host.Services.CreateScope())
                 {
                     await MyIdentityUserInitializer.InitializeAsync(scope.ServiceProvider);
-                    await UserDataInitializer.InitializeAsync(scope.ServiceProvider);
                     await host.RunAsync();
                 }
 

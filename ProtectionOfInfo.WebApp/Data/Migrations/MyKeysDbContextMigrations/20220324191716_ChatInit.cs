@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace ProtectionOfInfo.WebApp.Data.Migrations.MyKeysContextMigrations
+#nullable disable
+
+namespace ProtectionOfInfo.WebApp.Data.Migrations.MyKeysDbContextMigrations
 {
-    public partial class AddDataProtectionKeys : Migration
+    public partial class ChatInit : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

@@ -25,12 +25,12 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Services.ConvertToWordService
         /// <summary>
         /// Артикул
         /// </summary>
-        public string VendorCode { get; set; }
+        public string VendorCode { get; set; } = null!;
 
         /// <summary>
         /// Наименование товара
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         /// <summary>
         /// Количество товара
@@ -40,7 +40,7 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Services.ConvertToWordService
         /// <summary>
         /// Единица измерения
         /// </summary>
-        public string Unit { get; set; }
+        public string Unit { get; set; } = null!;
 
         /// <summary>
         /// Цена

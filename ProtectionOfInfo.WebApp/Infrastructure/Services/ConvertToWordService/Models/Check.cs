@@ -26,7 +26,7 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Services.ConvertToWordService
         /// <summary>
         /// Тип договора
         /// </summary>
-        public string Type { get; set; }
+        public string Type { get; set; } = null!;
 
         /// <summary>
         /// номер договора
@@ -41,27 +41,27 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Services.ConvertToWordService
         /// <summary>
         /// данные поставщика
         /// </summary>
-        public string Supplier { get; set; }
+        public string Supplier { get; set; } = null!;
 
         /// <summary>
         /// Платежные реквизиты поставщика
         /// </summary>
-        public string SupplierDetails { get; set; }
+        public string SupplierDetails { get; set; } = null!;
 
         /// <summary>
         /// Покупатель
         /// </summary>
-        public string Сustomer { get; set; }
+        public string Сustomer { get; set; } = null!;
 
         /// <summary>
         /// Адрес доставки
         /// </summary>
-        public string DeliveryAddress { get; set; }
+        public string DeliveryAddress { get; set; } = null!;
 
         /// <summary>
         /// Способ доставки
         /// </summary>
-        public string DeliveryType { get; set; }
+        public string DeliveryType { get; set; } = null!;
 
         /// <summary>
         /// Сумма счета без скидки
@@ -104,7 +104,7 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Services.ConvertToWordService
         /// <summary>
         /// Список товаров
         /// </summary>
-        public List<Product> Products { get; set; }
+        public List<Product> Products { get; set; } = null!;
 
         /// <summary>
         /// Количество позиций в заказе

@@ -8,7 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ProtectionOfInfo.WebApp.Data;
+using ProtectionOfInfo.WebApp.Data.DbContexts;
 using ProtectionOfInfo.WebApp.Data.Entities;
+using ProtectionOfInfo.WebApp.Hubs;
 using ProtectionOfInfo.WebApp.Infrastructure.Managers.Base;
 using ProtectionOfInfo.WebApp.Infrastructure.Providers.Base;
 using ProtectionOfInfo.WebApp.Infrastructure.Repositories.Base;
@@ -35,21 +37,45 @@ namespace ProtectionOfInfo.WebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddDbContext<ChatDbContext>(options =>
+            //    options.UseSqlServer(
+            //        Configuration.GetConnectionString("ChatDbConnection"),
+            //        providerOption => providerOption.EnableRetryOnFailure()));
+            //
+            //services.AddDbContext<CatalogDbContext>(options =>
+            //    options.UseSqlServer(
+            //        Configuration.GetConnectionString("CatalogConnection"),
+            //        providerOption => providerOption.EnableRetryOnFailure()));
+            //
+            //services.AddDbContext<UserDbContext>(options =>
+            //    options.UseSqlServer(
+            //        Configuration.GetConnectionString("UsersConnection"),
+            //        providerOption => providerOption.EnableRetryOnFailure()));
+            //
+            //services.AddDbContext<MyKeysDbContext>(options => 
+            //    options.UseSqlServer(
+            //        Configuration.GetConnectionString("MyKeysConnection"),
+            //        providerOption => providerOption.EnableRetryOnFailure()));
+
+            services.AddDbContext<ChatDbContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("ChatDbConnection")));
+
             services.AddDbContext<CatalogDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
-            // Add a DbContext to store your Database Keys
-            services.AddDbContext<MyKeysContext>(options => 
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
-            
+                    Configuration.GetConnectionString("CatalogConnection")));
+
             services.AddDbContext<UserDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("UserDbConnection")));
+                    Configuration.GetConnectionString("UsersConnection")));
+
+            services.AddDbContext<MyKeysDbContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("MyKeysConnection")));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddUnitOfWork<CatalogDbContext>();
-            services.AddUnitOfWork<UserDbContext>();
+            services.AddUnitOfWork<ChatDbContext>();
 
             services.AddIdentity<MyIdentityUser, IdentityRole>(options =>
             {
@@ -58,7 +84,7 @@ namespace ProtectionOfInfo.WebApp
                 options.SignIn.RequireConfirmedEmail = false;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
             })
-                .AddEntityFrameworkStores<CatalogDbContext>();
+                .AddEntityFrameworkStores<UserDbContext>();
 
             services.Configure<IdentityOptions>(config =>
             {
@@ -96,13 +122,14 @@ namespace ProtectionOfInfo.WebApp
                 config.LowercaseUrls = true;
             });
 
+            services.AddSignalR();
+
             // dependency injection
 
             services.AddTransient<IMyPasswordValidatorService, PasswordValidatorService>();
             
             // ---
             services.AddTransient<IDataEncryptionService, DataEncryptionService>();
-            services.AddTransient<IMyUserRepository, UserRepository>();
             services.AddTransient<IDictionaryApi, DictionaryApi>();
             
             /// // aggink: update summary - 01.03.2022 1:18:51
@@ -112,6 +139,8 @@ namespace ProtectionOfInfo.WebApp
             services.AddTransient<ISettingEDSFileService, SettingEDSFileService>();
             /// // aggink: update summary - 19.03.2022 1:45:29
             services.AddTransient<IConvertToWord, ConvertToWord>();
+            /// // aggink: update summary - 23.03.2022 16:36:36
+            services.AddSingleton<ChatManager>();
             // ---
 
             RepositoryRegistration.AddScopedRepositories(services);
@@ -119,9 +148,8 @@ namespace ProtectionOfInfo.WebApp
             ManagerRegistration.AddTransientManagers(services);
 
             // other settings
-
             services.AddAntiforgery();
-            services.AddDataProtection().PersistKeysToDbContext<MyKeysContext>();
+            services.AddDataProtection().PersistKeysToDbContext<MyKeysDbContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -172,13 +200,22 @@ namespace ProtectionOfInfo.WebApp
 
                 endpoints.MapControllerRoute(
                     name: "category",
-                    pattern: "{ controller=Category}/{action=Update}/{Id}");
+                    pattern: "{controller=Category}/{action=Update}/{id}");
+
+                endpoints.MapControllerRoute(
+                    name: "chat",
+                    pattern: "{controller=Chat}/{action}/{id?}");
+
+                endpoints.MapControllerRoute(
+                    name: "chatfile",
+                    pattern: "{controller=Chat}/{action=SendFileAsync}");
 
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}");
 
                 endpoints.MapRazorPages();
+                endpoints.MapHub<CommunicationHub>("/message");
             });
         }
     }

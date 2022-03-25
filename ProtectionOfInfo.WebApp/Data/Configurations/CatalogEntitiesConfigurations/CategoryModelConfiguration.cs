@@ -2,10 +2,11 @@
 using ProtectionOfInfo.WebApp.Data.CatalogEntities;
 using ProtectionOfInfo.WebApp.Data.Configurations;
 using ProtectionOfInfo.WebApp.Data.Configurations.Base;
+using ProtectionOfInfo.WebApp.Data.Configurations.Interfacess;
 
 namespace ProtectionOfInfo.WebApp.Data.CatalogEntitiesConfigurations
 {
-    public class CategoryModelConfiguration : AuditableModelConfigurationBase<Category>
+    public class CategoryModelConfiguration : AuditableModelConfigurationBase<Category>, ICatalogEntitiesConfigurations
     {
         protected override void AddBuilder(EntityTypeBuilder<Category> builder)
         {

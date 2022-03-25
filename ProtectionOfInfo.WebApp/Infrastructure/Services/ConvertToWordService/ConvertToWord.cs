@@ -95,14 +95,20 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Services.ConvertToWordService
 
                 var tableWithProducts = doc.Tables[1];
                 var tmpRow = new XWPFTableRow(tableWithProducts.Rows[1].GetCTRow(), tableWithProducts);
-                for(int i = 0; i < contract.Products.Count; i++)
+
+                XWPFTableRow[] rows = new XWPFTableRow[contract.Products.Count];
+                Parallel.For(0, contract.Products.Count, i =>
+                {
+                    rows[i] = new XWPFTableRow(tmpRow.GetCTRow().Copy(), tableWithProducts);
+                });
+
+                Parallel.For(0, contract.Products.Count, i =>
                 {
                     var product = contract.Products[i];
-                    var row = new XWPFTableRow(tmpRow.GetCTRow().Copy(), tableWithProducts);
-                    
-                    foreach (var cell in row.GetTableCells())
+
+                    foreach (var cell in rows[i].GetTableCells())
                     {
-                        foreach(var para in cell.Paragraphs)
+                        foreach (var para in cell.Paragraphs)
                         {
                             if (para.ParagraphText.Contains("{1}"))
                             {
@@ -151,7 +157,11 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Services.ConvertToWordService
                             }
                         }
                     }
-                    tableWithProducts.AddRow(row, i + 1);
+                });
+
+                for(int i = 0; i < contract.Products.Count; i++)
+                {
+                    tableWithProducts.AddRow(rows[i], i + 1);
                 }
 
                 int rowsCount = tableWithProducts.Rows.Count;

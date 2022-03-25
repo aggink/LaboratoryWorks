@@ -9,6 +9,5 @@ namespace ProtectionOfInfo.WebApp.Data.Entities
         public bool BlockedUser { get; set; } = false;
         public bool PasswordValidation { get; set; } = false;
         public bool FirstAccess { get; set; } = true;
-        public ICollection<Order>? Orders { get; set; }
     }
 }

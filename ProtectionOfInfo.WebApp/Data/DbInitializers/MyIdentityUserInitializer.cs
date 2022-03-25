@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
+using ProtectionOfInfo.WebApp.Data.DbContexts;
 using ProtectionOfInfo.WebApp.Data.Entities;
 using System;
 using System.Linq;
@@ -22,17 +23,41 @@ namespace ProtectionOfInfo.WebApp.Data
             const string password = "123qwe123";
 
             var scope = serviceProvider.CreateScope();
-            await using var context = scope.ServiceProvider.GetService<CatalogDbContext>();
-            await using var contextMyKeys = scope.ServiceProvider.GetService<MyKeysContext>();
+            //база данный пользователей входит в catalogDbContext
+            await using var catalogDbContext = scope.ServiceProvider.GetService<CatalogDbContext>();
+            await using var userDbContext = scope.ServiceProvider.GetService<UserDbContext>();
+            await using var myKeysDbContext = scope.ServiceProvider.GetService<MyKeysDbContext>();
+            await using var chatDbContext = scope.ServiceProvider.GetService<ChatDbContext>();
+
             //проверка на существование БД
-            var isExists = context!.GetService<IDatabaseCreator>() is RelationalDatabaseCreator databaseCreator && await databaseCreator.ExistsAsync();
-            if (isExists) return;
 
-            var isExistsMyKeys = context!.GetService<IDatabaseCreator>() is RelationalDatabaseCreator databaseCreatorMyKey && await databaseCreatorMyKey.ExistsAsync();
-            if (isExistsMyKeys) return;
+            var user_IsExists = userDbContext!.GetService<IDatabaseCreator>() is RelationalDatabaseCreator userDbCreator && await userDbCreator.ExistsAsync();
+            if (!user_IsExists)
+            {
+                await userDbContext!.Database.MigrateAsync();
+            }
 
-            await context!.Database.MigrateAsync();
-            await contextMyKeys!.Database.MigrateAsync();
+            var myKeys_IsExists = myKeysDbContext!.GetService<IDatabaseCreator>() is RelationalDatabaseCreator myKeyDbCreator && await myKeyDbCreator.ExistsAsync();
+            if (!myKeys_IsExists)
+            {
+                await myKeysDbContext!.Database.MigrateAsync();
+            }
+
+            var catalog_IsExists = catalogDbContext!.GetService<IDatabaseCreator>() is RelationalDatabaseCreator catalogDbCreator && await catalogDbCreator.ExistsAsync();
+            if (!catalog_IsExists)
+            {
+                await catalogDbContext!.Database.MigrateAsync();
+                await catalogDbContext!.SaveChangesAsync();
+            }
+
+            var chat_IsExists = chatDbContext!.GetService<IDatabaseCreator>() is RelationalDatabaseCreator chatDbCreator && await chatDbCreator.ExistsAsync();
+            if (!chat_IsExists)
+            {
+                await chatDbContext!.Database.MigrateAsync();
+                await chatDbContext!.SaveChangesAsync();
+            }
+
+            if (user_IsExists) return;
 
             var userManager = scope.ServiceProvider.GetService<UserManager<MyIdentityUser>>();
             var roleManager = scope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
@@ -63,8 +88,8 @@ namespace ProtectionOfInfo.WebApp.Data
             identityResult = await userManager.AddToRolesAsync(user, roles);
             IdentityResultHandler(identityResult);
 
-            await context.SaveChangesAsync();
-            await contextMyKeys.SaveChangesAsync();
+            await userDbContext!.SaveChangesAsync();
+            await myKeysDbContext!.SaveChangesAsync();
         }
 
         private static void IdentityResultHandler(IdentityResult result)

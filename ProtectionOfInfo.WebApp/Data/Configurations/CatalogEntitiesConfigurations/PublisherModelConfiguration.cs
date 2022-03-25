@@ -2,10 +2,11 @@
 using ProtectionOfInfo.WebApp.Data.CatalogEntities;
 using ProtectionOfInfo.WebApp.Data.Configurations;
 using ProtectionOfInfo.WebApp.Data.Configurations.Base;
+using ProtectionOfInfo.WebApp.Data.Configurations.Interfacess;
 
 namespace ProtectionOfInfo.WebApp.Data.CatalogEntitiesConfigurations
 {
-    public class PublisherModelConfiguration : AuditableModelConfigurationBase<Publisher>
+    public class PublisherModelConfiguration : AuditableModelConfigurationBase<Publisher>, ICatalogEntitiesConfigurations
     {
         protected override void AddBuilder(EntityTypeBuilder<Publisher> builder)
         {

@@ -1,8 +1,6 @@
 ﻿using Calabonga.UnitOfWork;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ProtectionOfInfo.WebApp.Data.Base.EntitiesBase;
-using ProtectionOfInfo.WebApp.Data.Entities;
 using System;
 using System.Linq;
 using System.Threading;
@@ -10,30 +8,14 @@ using System.Threading.Tasks;
 
 namespace ProtectionOfInfo.WebApp.Data.Base
 {
-    /// <summary>
-    ///  Добавление наследования от IdentityDbContext.
-    ///  Переопределение функций по сохранению изменений в БД.
-    ///  Автоматическое добавление о времени изменения записи.
-    /// </summary>
-    public class DbContextBase : IdentityDbContext<MyIdentityUser>
+    public class DbContextBase : DbContext
     {
         public SaveChangesResult SaveChangesResult { get; set; }
+
         protected DbContextBase(DbContextOptions options) : base(options)
         {
             SaveChangesResult = new SaveChangesResult();
-        }
-
-        /// <summary>
-        /// Configures the schema needed for the identity framework.
-        /// </summary>
-        /// <param name="builder">
-        /// The builder being used to construct the model for this context.
-        /// </param>
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(Startup).Assembly);
-            base.OnModelCreating(modelBuilder);
-        }
+        }        
 
         public override int SaveChanges()
         {
@@ -61,13 +43,13 @@ namespace ProtectionOfInfo.WebApp.Data.Base
 
         private void DbSaveChanges()
         {
-            const string defaultUser = "admin";
+            const string defaultUser = AppData.AdministratorRoleName;
             var defaultDate = DateTime.UtcNow;
 
             #region AddedEntities
 
             var addedEntities = ChangeTracker.Entries().Where(x => x.State == EntityState.Added);
-            foreach(var entity in addedEntities)
+            foreach (var entity in addedEntities)
             {
                 if (entity.Entity is not IAuditable) continue;
 
@@ -96,7 +78,7 @@ namespace ProtectionOfInfo.WebApp.Data.Base
             #region ModifiedEntities
 
             var modifiedEntities = ChangeTracker.Entries().Where(x => x.State == EntityState.Modified);
-            foreach(var entity in modifiedEntities)
+            foreach (var entity in modifiedEntities)
             {
                 if (entity.Entity is not IAuditable) continue;
 
