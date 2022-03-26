@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,6 +7,8 @@ namespace ProtectionOfInfo.WebApp.Hubs
 {
     public class ChatManager
     {
+        public ChatManager() { }
+
         public List<ChatUser> Users { get; } = new();
 
         public void ConnectUser(string userName, string connectedId)
@@ -65,6 +68,6 @@ namespace ProtectionOfInfo.WebApp.Hubs
                     x.UserName,
                     userName,
                     StringComparison.CurrentCultureIgnoreCase));
-        }
+        } 
     }
 }

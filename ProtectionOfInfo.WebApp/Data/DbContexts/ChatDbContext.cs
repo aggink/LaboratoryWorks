@@ -12,7 +12,6 @@ namespace ProtectionOfInfo.WebApp.Data
             : base(options) { }
 
         public DbSet<ChatMessage> ChatMessages { get; set; } = null!;
-        public DbSet<FileDescription> FileDescriptions { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

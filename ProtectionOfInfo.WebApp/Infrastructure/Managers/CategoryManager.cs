@@ -31,7 +31,7 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Managers
 
             var entity = await repository.GetFirstOrDefaultAsync(
                 predicate: x => x.Id == Id,
-                include: i => i.Include(x => x.Books)
+                include: i => i.Include(x => x.Books!)
                 );
 
             if (entity == null)
@@ -52,7 +52,7 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Managers
             var operation = OperationResult.CreateResult<List<Category>>();
 
             IList<Category> categories = await repository.GetAllAsync(
-                include: i => i.Include(x => x.Books)
+                include: i => i.Include(x => x.Books!)
                 );
 
             operation.AddSuccess($"Список всех сущностей из таблицы {EntityName} получен");

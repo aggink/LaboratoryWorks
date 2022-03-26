@@ -51,7 +51,7 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Managers
 
             var entity = await repository.GetFirstOrDefaultAsync(
                 predicate: x => x.Id == Id,
-                include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author)
+                include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!)
                 );
 
             if (entity == null)
@@ -72,7 +72,7 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Managers
             var operation = OperationResult.CreateResult<List<Book>>();
 
             IList<Book> books = await repository.GetAllAsync(
-                include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author)
+                include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!)
                 );
 
             operation.AddSuccess($"Список всех сущностей из таблицы {EntityName} получен");
@@ -98,7 +98,7 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Managers
                 operation.AppendLog(authors.Logs);
                 operation.MetaData = authors.MetaData;
                 operation.Exception = authors.Exception;
-                operation.Result = default(TEntity);
+                operation.Result = default(TEntity)!;
                 return operation;
             }
 
@@ -112,7 +112,7 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Managers
                 operation.AppendLog(publishers.Logs);
                 operation.MetaData = publishers.MetaData;
                 operation.Exception = publishers.Exception;
-                operation.Result = default(TEntity);
+                operation.Result = default(TEntity)!;
                 return operation;
             }
 
@@ -126,7 +126,7 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Managers
                 operation.AppendLog(categories.Logs);
                 operation.MetaData = categories.MetaData;
                 operation.Exception = categories.Exception;
-                operation.Result = default(TEntity);
+                operation.Result = default(TEntity)!;
                 return operation;
             }
 
@@ -145,7 +145,7 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Managers
                 operation.AppendLog(author.Logs);
                 operation.MetaData = author.MetaData;
                 operation.Exception = author.Exception;
-                operation.Result = default(TEntity);
+                operation.Result = default(TEntity)!;
                 return operation;
             }
 
@@ -155,7 +155,7 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Managers
                 operation.AppendLog(category.Logs);
                 operation.MetaData = category.MetaData;
                 operation.Exception = category.Exception;
-                operation.Result = default(TEntity);
+                operation.Result = default(TEntity)!;
                 return operation;
             }
 
@@ -165,7 +165,7 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Managers
                 operation.AppendLog(publisher.Logs);
                 operation.MetaData = publisher.MetaData;
                 operation.Exception = publisher.Exception;
-                operation.Result = default(TEntity);
+                operation.Result = default(TEntity)!;
                 return operation;
             }
 
@@ -258,7 +258,7 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Managers
             var _repository = _unitOfWork.GetRepository<Book>();
 
             IList<Book> categories = await _repository.GetAllAsync(
-                        include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author));
+                        include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!));
             switch (ObjectSearch.ToLower())
             {
                 case "all":
@@ -329,17 +329,17 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Managers
                     {
                         case "orderby":
                             categories = await _repository.GetAllAsync(
-                                include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author),
+                                include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!),
                                 orderBy: o => o.OrderBy(x => x.Name));
                             break;
                         case "orderbydescending":
                             categories = await _repository.GetAllAsync(
-                                include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author),
+                                include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!),
                                 orderBy: o => o.OrderByDescending(x => x.Name));
                             break;
                         default:
                             categories = await _repository.GetAllAsync(
-                                include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author));
+                                include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!));
                             break;
                     }
                     break;
@@ -348,17 +348,17 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Managers
                     {
                         case "orderby":
                             categories = await _repository.GetAllAsync(
-                                include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author),
+                                include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!),
                                 orderBy: o => o.OrderBy(x => x.Price));
                             break;
                         case "orderbydescending":
                             categories = await _repository.GetAllAsync(
-                                include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author),
+                                include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!),
                                 orderBy: o => o.OrderByDescending(x => x.Price));
                             break;
                         default:
                             categories = await _repository.GetAllAsync(
-                                include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author));
+                                include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!));
                             break;
                     }
                     break;
@@ -367,17 +367,17 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Managers
                     {
                         case "orderby":
                             categories = await _repository.GetAllAsync(
-                                include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author),
+                                include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!),
                                 orderBy: o => o.OrderBy(x => x.Publisher!.Name));
                             break;
                         case "orderbydescending":
                             categories = await _repository.GetAllAsync(
-                                include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author),
+                                include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!),
                                 orderBy: o => o.OrderByDescending(x => x.Publisher!.Name));
                             break;
                         default:
                             categories = await _repository.GetAllAsync(
-                                include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author));
+                                include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!));
                             break;
                     }
                     break;
@@ -386,17 +386,17 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Managers
                     {
                         case "orderby":
                             categories = await _repository.GetAllAsync(
-                                include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author),
+                                include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!),
                                 orderBy: o => o.OrderBy(x => x.Category!.Name));
                             break;
                         case "orderbydescending":
                             categories = await _repository.GetAllAsync(
-                                include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author),
+                                include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!),
                                 orderBy: o => o.OrderByDescending(x => x.Category!.Name));
                             break;
                         default:
                             categories = await _repository.GetAllAsync(
-                                include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author));
+                                include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!));
                             break;
                     }
                     break;
@@ -405,23 +405,23 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Managers
                     {
                         case "orderby":
                             categories = await _repository.GetAllAsync(
-                                include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author),
+                                include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!),
                                 orderBy: o => o.OrderBy(x => x.Author!.Name));
                             break;
                         case "orderbydescending":
                             categories = await _repository.GetAllAsync(
-                                include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author),
+                                include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!),
                                 orderBy: o => o.OrderByDescending(x => x.Author!.Name));
                             break;
                         default:
                             categories = await _repository.GetAllAsync(
-                                include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author));
+                                include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!));
                             break;
                     }
                     break;
                 default:
                     categories = await _repository.GetAllAsync(
-                        include: i => i.Include(x => x.Publisher).Include(x => x.Category).Include(x => x.Author));
+                        include: i => i.Include(x => x.Publisher!).Include(x => x.Category!).Include(x => x.Author!));
                     break;
             }
 

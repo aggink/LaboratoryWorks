@@ -140,6 +140,7 @@ namespace ProtectionOfInfo.WebApp
             /// // aggink: update summary - 19.03.2022 1:45:29
             services.AddTransient<IConvertToWord, ConvertToWord>();
             /// // aggink: update summary - 23.03.2022 16:36:36
+            services.AddTransient<IChatMessagesManager, ChatMessagesManager>();
             services.AddSingleton<ChatManager>();
             // ---
 

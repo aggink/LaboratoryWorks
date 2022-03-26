@@ -1,4 +1,4 @@
-﻿namespace ProtectionOfInfo.WebApp.ViewModels.PortInfoViewModel
+﻿namespace ProtectionOfInfo.WebApp.ViewModels.PortInfoViewModels
 {
     public class PortInfoViewModel
     {

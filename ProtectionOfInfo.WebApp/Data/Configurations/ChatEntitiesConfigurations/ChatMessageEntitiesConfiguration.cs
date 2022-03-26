@@ -10,10 +10,11 @@ namespace ProtectionOfInfo.WebApp.Data.Configurations.ChatEntitiesConfigurations
         protected override void AddBuilder(EntityTypeBuilder<ChatMessage> builder)
         {
             builder.Property(x => x.UserId).IsRequired();
-            builder.Property(x => x.FileId);
             builder.Property(x => x.Message);
-
-            builder.HasOne(x => x.File);
+            builder.Property(x => x.ContentType);
+            builder.Property(x => x.Data);
+            builder.Property(x => x.Extension);
+            builder.Property(x => x.FileName);
         }
 
         protected override string TableName()

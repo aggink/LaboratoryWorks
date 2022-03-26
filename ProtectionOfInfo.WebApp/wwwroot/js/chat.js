@@ -4,6 +4,7 @@ let _connection;
 $('button#Connect').on('click', connect);
 $('button#Disconnect').on('click', disconnect);
 $('button#Send').on('click', send);
+$('button#GetOldMessages').on('click', getAllMessages);
 
 let _users = [];
 
@@ -11,6 +12,7 @@ function buildConnection() {
 
     $('button#Disconnect').slideToggle();
     $('button#Send').slideToggle();
+    $('button#GetOldMessages').slideToggle();
 
     _connection = new signalR.HubConnectionBuilder()
         .withUrl("/message")
@@ -43,6 +45,10 @@ function buildConnection() {
 
     _connection.on("SendErrorAsync", (message) => {
         AddMessageError(message);
+    });
+
+    _connection.on("SendAllMessagesAsync", (messages) => {
+        AddAllMessages(messages);
     });
 }
 
@@ -181,6 +187,28 @@ function AddMessageError(message) {
     scroll.scrollTop(scroll.prop('scrollHeight'));
 }
 
+function AddAllMessages(messages) {
+
+    $('.list-group-item').remove();
+
+    for (var i = 0; i < messages.length; i++) {
+        var item = Object.values(messages[i]);
+
+        if (item[1]) {
+            AddMessage(item[0], item[2]);
+        }
+        else if (item[3]) {
+            AddMessageImg(item[0], item[4]);
+        }
+        else {
+            AddMessageUrl(item[0], item[4], item[5]);
+        }
+    }
+
+    var scroll = $('.chat-messages');
+    scroll.scrollTop(scroll.prop('scrollHeight'));
+}
+
 async function start() {
     try {
         await _connection.start();
@@ -192,6 +220,7 @@ async function start() {
 };
 
 async function send() {
+
     var $file = $('input#messageFile');
     var $message = $('input#messageText').val();
 
@@ -239,6 +268,10 @@ async function send() {
     }
 }
 
+async function getAllMessages() {
+    await _connection.invoke("SendAllMessagesAsync", "text");
+}
+
 function connect() {
 
     if (_connection) {
@@ -248,6 +281,7 @@ function connect() {
         $('button#Connect').slideToggle(200);
         $('button#Disconnect').slideToggle(200);
         $('button#Send').slideToggle(200);
+        $('button#GetOldMessages').slideToggle(200);
     }
     return;
 }
@@ -259,6 +293,7 @@ function disconnect() {
         $('button#Disconnect').slideToggle(200);
         $('button#Connect').slideToggle(200);
         $('button#Send').slideToggle(200);
+        $('button#GetOldMessages').slideToggle(200);
 
         console.log("Disconnecting...");
         _connection.stop();

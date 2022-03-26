@@ -1,4 +1,4 @@
-﻿using ProtectionOfInfo.WebApp.ViewModels.PortInfoViewModel;
+﻿using ProtectionOfInfo.WebApp.ViewModels.PortInfoViewModels;
 using System.Collections.Generic;
 
 namespace ProtectionOfInfo.WebApp.Infrastructure.Services.PortInfoService

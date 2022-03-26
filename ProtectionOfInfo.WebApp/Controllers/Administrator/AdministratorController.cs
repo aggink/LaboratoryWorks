@@ -8,7 +8,7 @@ using ProtectionOfInfo.WebApp.Infrastructure.OperationResults;
 using ProtectionOfInfo.WebApp.Infrastructure.Services.PasswordValidatorsService;
 using ProtectionOfInfo.WebApp.Infrastructure.Services.PortInfoService;
 using ProtectionOfInfo.WebApp.ViewModels.AccountViewModels;
-using ProtectionOfInfo.WebApp.ViewModels.PortInfoViewModel;
+using ProtectionOfInfo.WebApp.ViewModels.PortInfoViewModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

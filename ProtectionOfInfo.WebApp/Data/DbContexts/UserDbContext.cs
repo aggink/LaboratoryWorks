@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using ProtectionOfInfo.WebApp.Data.Configurations.Interfaces;
 using ProtectionOfInfo.WebApp.Data.Entities;
-using ProtectionOfInfo.WebApp.Data.Entities.ChatEntities;
 using System.Linq;
 
 namespace ProtectionOfInfo.WebApp.Data.DbContexts

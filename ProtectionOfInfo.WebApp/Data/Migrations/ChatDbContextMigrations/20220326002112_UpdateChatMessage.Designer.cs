@@ -12,8 +12,8 @@ using ProtectionOfInfo.WebApp.Data;
 namespace ProtectionOfInfo.WebApp.Data.Migrations.ChatDbContextMigrations
 {
     [DbContext(typeof(ChatDbContext))]
-    [Migration("20220324191812_ChatInit")]
-    partial class ChatInit
+    [Migration("20220326002112_UpdateChatMessage")]
+    partial class UpdateChatMessage
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -30,6 +30,9 @@ namespace ProtectionOfInfo.WebApp.Data.Migrations.ChatDbContextMigrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ContentType")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -37,8 +40,17 @@ namespace ProtectionOfInfo.WebApp.Data.Migrations.ChatDbContextMigrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("FileId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<byte[]>("Data")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("Extension")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsImage")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Message")
                         .HasColumnType("nvarchar(max)");
@@ -55,62 +67,7 @@ namespace ProtectionOfInfo.WebApp.Data.Migrations.ChatDbContextMigrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FileId");
-
                     b.ToTable("ChatMessages");
-                });
-
-            modelBuilder.Entity("ProtectionOfInfo.WebApp.Data.Entities.ChatEntities.FileDescription", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("Data")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("Extension")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FileDescriptions");
-                });
-
-            modelBuilder.Entity("ProtectionOfInfo.WebApp.Data.Entities.ChatEntities.ChatMessage", b =>
-                {
-                    b.HasOne("ProtectionOfInfo.WebApp.Data.Entities.ChatEntities.FileDescription", "File")
-                        .WithMany()
-                        .HasForeignKey("FileId");
-
-                    b.Navigation("File");
                 });
 #pragma warning restore 612, 618
         }

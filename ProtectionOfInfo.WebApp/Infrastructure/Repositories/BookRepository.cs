@@ -47,7 +47,7 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Repositories
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
                 await transaction.RollbackAsync(_cancellationToken);
-                operation.AddError(_unitOfWork.LastSaveChangesResult.Exception);
+                operation.AddError(_unitOfWork.LastSaveChangesResult.Exception!);
                 return operation;
             }
 
@@ -73,7 +73,7 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Repositories
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
-                operation.AddError(_unitOfWork.LastSaveChangesResult.Exception);
+                operation.AddError(_unitOfWork.LastSaveChangesResult.Exception!);
                 return operation;
             }
 
@@ -122,7 +122,7 @@ namespace ProtectionOfInfo.WebApp.Infrastructure.Repositories
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
-                operation.AddError(_unitOfWork.LastSaveChangesResult.Exception);
+                operation.AddError(_unitOfWork.LastSaveChangesResult.Exception!);
                 return operation;
             }
 

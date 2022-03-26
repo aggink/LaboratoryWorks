@@ -6,8 +6,11 @@ namespace ProtectionOfInfo.WebApp.Data.Entities.ChatEntities
     public class ChatMessage : Auditable
     {
         public Guid UserId { get; set; }
-        public Guid? FileId { get; set; }
+        public bool IsImage { get; set; } 
         public string? Message { get; set; }
-        public FileDescription? File { get; set; }
+        public string? ContentType { get; set; }
+        public string? FileName { get; set; } 
+        public string? Extension { get; set; } 
+        public byte[]? Data { get; set; } 
     }
 }

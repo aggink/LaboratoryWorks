@@ -21,25 +21,15 @@ namespace ProtectionOfInfo.WebApp.Controllers
     [AutoValidateAntiforgeryToken]
     public class ChatController : Controller
     {
-        private readonly IUnitOfWork<ChatDbContext> _unitOfWork;
-        private readonly UserManager<MyIdentityUser> _userManager;
-        private readonly CancellationToken _cancellationToken;
+        private readonly IChatMessagesManager _chatMessagesManager;
         private readonly IHubContext<CommunicationHub, ICommunicationHub> _hubContext;
 
-        private List<string> imagesExt = new List<string>()
-        {
-            "png", "jpeg", "bmp", "jpg"
-        };
-
         public ChatController(
-            IUnitOfWork<ChatDbContext> unitOfWork, 
-            UserManager<MyIdentityUser> userManager, 
+            IChatMessagesManager chatMessagesManager,
             IHubContext<CommunicationHub, ICommunicationHub> hubContext)
         {
-            _unitOfWork = unitOfWork;
-            _userManager = userManager;
+            _chatMessagesManager = chatMessagesManager;
             _hubContext = hubContext;
-            _cancellationToken = new CancellationTokenSource().Token;
         }
 
         [HttpGet]
@@ -72,103 +62,27 @@ namespace ProtectionOfInfo.WebApp.Controllers
                 }
 
                 string userName = User?.Identity?.Name ?? "Anonymous";
-                var user = await _userManager.FindByNameAsync(userName);
-                if (user == null)
-                {
-                    opeartion.Result = false;
-                    opeartion.AddError("Пользователь не найден");
-
-                    await _hubContext.Clients.Client(connectionId).SendErrorAsync(opeartion.MetaData.Message);
-
-                    return new JsonResult(opeartion);
-                }
-
                 var file = new FileDescription()
                 {
-                    Id = Guid.NewGuid(),
-                    CreatedBy = userName,
-                    UpdatedBy = userName,
-                    UserId = Guid.Parse(user.Id),
                     ContentType = uploadedFile.ContentType,
                     FileName = Path.GetFileNameWithoutExtension(uploadedFile.FileName),
                     Extension = Path.GetExtension(uploadedFile.FileName),
                     Data = data
                 };
 
-                var message = new ChatMessage()
+                var result = await _chatMessagesManager.AddFileAsync(userName, file);
+
+                if (result.IsImage)
                 {
-                    Id = Guid.NewGuid(),
-                    CreatedBy = userName,
-                    UpdatedBy = userName,
-                    UserId = Guid.Parse(user.Id),
-                    Message = null,
-                    FileId = file.Id
-                };
-
-                var fileRepository = _unitOfWork.GetRepository<FileDescription>();
-                var chatRepository = _unitOfWork.GetRepository<ChatMessage>();
-                await using var transaction = await _unitOfWork.BeginTransactionAsync();
-
-                await fileRepository.InsertAsync(file, _cancellationToken);
-                await chatRepository.InsertAsync(message, _cancellationToken);
-
-                await _unitOfWork.SaveChangesAsync();
-                if (!_unitOfWork.LastSaveChangesResult.IsOk)
+                    await _hubContext.Clients.All.SendImageAsync(result.UserName, result.Url);
+                }
+                else
                 {
-                    opeartion.Result = false;
-                    opeartion.AddError("Ошибка при сохранении файла");
-
-                    await transaction.RollbackAsync(_cancellationToken);
-                    await _hubContext.Clients.Client(connectionId).SendErrorAsync(opeartion.MetaData.Message);
-
-                    return new JsonResult(opeartion);
+                    await _hubContext.Clients.All.SendUrlAsync(result.UserName, result.Url, result.FileName + result.Extension);
                 }
 
-                await transaction.CommitAsync(_cancellationToken);
-
-                //обработка картинки
-                foreach (var ext in imagesExt)
-                {
-                    if(file.Extension.Contains(ext, StringComparison.OrdinalIgnoreCase))
-                    {
-                        var imageUrl = $"/Chat/GetImage?id={file.Id}";
-                        if (string.IsNullOrEmpty(imageUrl))
-                        {
-                            opeartion.Result = false;
-                            opeartion.AddError("Ошибка при создании ссылки на картинку");
-
-                            await transaction.RollbackAsync(_cancellationToken);
-                            await _hubContext.Clients.Client(connectionId).SendErrorAsync(opeartion.MetaData.Message);
-  
-                            return new JsonResult(opeartion);
-                        }
-
-                        opeartion.Result = true;
-                        opeartion.AddSuccess("Cсылка на изображения создана");
-
-                        await _hubContext.Clients.All.SendImageAsync(user.UserName, imageUrl);
-
-                        return new JsonResult(opeartion);
-                    }
-                }
-                
-                //обработка файла
-                var fileUrl = $"/Chat/GetFile?id={file.Id}";
-                if (string.IsNullOrEmpty(fileUrl))
-                {
-                    opeartion.Result = false;
-                    opeartion.AddError("Ошибка при создании ссылки на файл");
-
-                    await transaction.RollbackAsync(_cancellationToken);
-                    await _hubContext.Clients.Client(connectionId).SendErrorAsync(opeartion.MetaData.Message);
-
-                    return new JsonResult(opeartion);
-                }
-
-                opeartion.Result = true; 
-                opeartion.AddSuccess("Cсылка на файл создана");
-
-                await _hubContext.Clients.All.SendUrlAsync(user.UserName, fileUrl, file.FileName + file.Extension);
+                opeartion.Result = true;
+                opeartion.AddSuccess("Запрос успешно обработан");
 
                 return new JsonResult(opeartion);
             }
@@ -188,19 +102,17 @@ namespace ProtectionOfInfo.WebApp.Controllers
         {
             try
             {
-                var fileRepository = _unitOfWork.GetRepository<FileDescription>();
-                var fileId = Guid.Parse(id);
-                var file = await fileRepository.GetFirstOrDefaultAsync(predicate: x => x.Id == fileId);
-                if(file != null)
+                var file = await _chatMessagesManager.GetFileAsync(id);
+                if(file == null)
                 {
-                    return File(file.Data, "application/" + file.Extension.Trim('.'), file.FileName + file.Extension);
+                    throw new Exception("Файл не найден");
                 }
 
-                return RedirectToAction(nameof(MessageError), new { message = "Ошибка получении файла" });
+                return File(file.File, "application/" + file.Extension.Trim('.'), file.FileName + file.Extension);
             }
-            catch
+            catch (Exception ex)
             {
-                return RedirectToAction(nameof(MessageError), new { message = "Ошибка получении файла" });
+                return RedirectToAction(nameof(MessageError), new { message = ex.Message });
             }
         }
 
@@ -209,25 +121,18 @@ namespace ProtectionOfInfo.WebApp.Controllers
         {
             try
             {
-                var fileRepository = _unitOfWork.GetRepository<FileDescription>();
-                var imageId = Guid.Parse(id);
-                var file = await fileRepository.GetFirstOrDefaultAsync(predicate: x => x.Id == imageId);
-                if (file != null)
+                var image = await _chatMessagesManager.GetImageAsync(id);
+                if(image == null)
                 {
-                    foreach(var ext in imagesExt)
-                    {
-                        if(file.Extension.Contains(ext, StringComparison.OrdinalIgnoreCase))
-                        {
-                            return File(file.Data, "application/" + file.Extension.Trim('.'), id + file.Extension);
-                        }
-                    }
+                    throw new Exception("Файл не найден");
                 }
 
-                return RedirectToAction(nameof(MessageError), new {message = "Ошибка получении картинки"});
+                return File(image.File, "application/" + image.Extension.Trim('.'), id + image.Extension);
+
             }
-            catch
+            catch (Exception ex)
             {
-                return RedirectToAction(nameof(MessageError), new { message = "Ошибка получении картинки" });
+                return RedirectToAction(nameof(MessageError), new { message = ex.Message });
             }
         }
 
@@ -244,37 +149,24 @@ namespace ProtectionOfInfo.WebApp.Controllers
         {
             var operation = OperationResult.CreateResult<bool>();
 
-            var chatRepository = _unitOfWork.GetRepository<ChatMessage>();
-            var fileRepository = _unitOfWork.GetRepository<FileDescription>();
-            if(chatRepository != null && fileRepository != null)
+            try
             {
-                var messages = await chatRepository.GetAllAsync(false);
-                if (messages != null)
+                var result = await _chatMessagesManager.DeleteMessageAsync();
+                if (!result)
                 {
-                    foreach (var message in messages)
-                    {
-                        var file = await fileRepository.GetFirstOrDefaultAsync(predicate: x => x.Id == message.FileId);
-                        if(file != null)
-                        {
-                            fileRepository.Delete(file);
-                        }
-
-                        chatRepository.Delete(message);
-                    }
-
-                    await _unitOfWork.SaveChangesAsync();                
-                    if (_unitOfWork.LastSaveChangesResult.IsOk)
-                    {
-                        operation.AddError("Удалении сообщений завершилось успешно");
-                        operation.Result = true;
-                        return new JsonResult(operation);
-                    }
+                    throw new Exception("Ошибка при очистке чата");
                 }
-            }
 
-            operation.AddError("Ошибка при удалении сообщений");
-            operation.Result = false;
-            return new JsonResult(operation);
+                operation.AddSuccess("Удалении сообщений завершилось успешно");
+                operation.Result = true;
+                return new JsonResult(operation);
+            }
+            catch(Exception ex)
+            {
+                operation.AddError(ex.Message);
+                operation.Result = false;
+                return new JsonResult(operation);
+            }
         }
     }
 }

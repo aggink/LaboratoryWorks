@@ -15,22 +15,16 @@ namespace ProtectionOfInfo.WebApp.Hubs
     [Authorize]
     public class CommunicationHub : Hub<ICommunicationHub>
     {
+        private readonly IChatMessagesManager _chatMessagesManager;
         private readonly ChatManager _chatManager;
         private const string _defaultGroupName = "General";
 
-        private readonly IUnitOfWork<ChatDbContext> _unitOfWork;
-        private readonly UserManager<MyIdentityUser> _userManager;
-        private readonly CancellationToken _cancellationToken;  
-
         public CommunicationHub(
-            ChatManager chatManager, 
-            IUnitOfWork<ChatDbContext> unitOfWork,
-            UserManager<MyIdentityUser> userManager)
+            ChatManager chatManager,
+            IChatMessagesManager chatMessagesManager)
         {
             _chatManager = chatManager;
-            _unitOfWork = unitOfWork;
-            _userManager = userManager;
-            _cancellationToken = new CancellationTokenSource().Token;
+            _chatMessagesManager = chatMessagesManager;
         }
 
         public override async Task OnConnectedAsync()
@@ -64,39 +58,34 @@ namespace ProtectionOfInfo.WebApp.Hubs
 
         public async Task SendMessageAsync(string message)
         {
-            var chatRepository = _unitOfWork.GetRepository<ChatMessage>();
-            await using var transaction = await _unitOfWork.BeginTransactionAsync();
-
             var userName = Context.User!.Identity?.Name ?? "Anonymous";
-            var user = await _userManager.FindByNameAsync(userName);
-            if(user == null)
+            try
             {
-                await Clients.Caller.SendErrorAsync("Пользователь не найден");
-                return;
+                await _chatMessagesManager.AddMessageAsync(userName, message);
+                await Clients.All.SendMessageAsync(userName, message);
             }
-
-            var entity = new ChatMessage()
+            catch (Exception ex)
             {
-                Id = Guid.NewGuid(),
-                CreatedBy = userName,
-                UpdatedBy = userName,
-                UserId = Guid.Parse(user.Id),
-                Message = message,
-                FileId = null
-            };
+                await Clients.Caller.SendErrorAsync(ex.Message);
+            }          
+        }
 
-            await chatRepository.InsertAsync(entity, _cancellationToken);
-
-            await _unitOfWork.SaveChangesAsync();
-            if (!_unitOfWork.LastSaveChangesResult.IsOk)
+        public async Task SendAllMessagesAsync(string text)
+        {
+            try
             {
-                await transaction.RollbackAsync(_cancellationToken);
-                await Clients.Caller.SendErrorAsync("Ошибка при отправке сообщения");
-                return;
+                var messages = await _chatMessagesManager.GetAllMessagesAsync();
+                if(messages == null)
+                {
+                    throw new Exception("Ошибка при получении списка сообщений");
+                }
+
+                await Clients.Caller.SendAllMessagesAsync(messages);
             }
-
-            await transaction.CommitAsync(_cancellationToken);
-            await Clients.All.SendMessageAsync(userName, message);
+            catch (Exception ex)
+            {
+                await Clients.Caller.SendErrorAsync(ex.Message);
+            }
         }
     }
 }

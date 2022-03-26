@@ -1,8 +1,6 @@
-﻿using ProtectionOfInfo.WebApp.ViewModels.PortInfoViewModel;
-using System;
+﻿using ProtectionOfInfo.WebApp.ViewModels.PortInfoViewModels;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.NetworkInformation;
 
 namespace ProtectionOfInfo.WebApp.Infrastructure.Services.PortInfoService
