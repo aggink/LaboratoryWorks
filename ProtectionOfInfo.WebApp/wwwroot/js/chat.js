@@ -189,7 +189,8 @@ function AddMessageError(message) {
 
 function AddAllMessages(messages) {
 
-    $('.list-group-item').remove();
+    $('.chat-message-right').remove();
+    $('.chat-message-left').remove();
 
     for (var i = 0; i < messages.length; i++) {
         var item = Object.values(messages[i]);
