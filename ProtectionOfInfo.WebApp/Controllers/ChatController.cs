@@ -1,18 +1,13 @@
-﻿using Calabonga.UnitOfWork;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using ProtectionOfInfo.WebApp.Data;
-using ProtectionOfInfo.WebApp.Data.Entities;
-using ProtectionOfInfo.WebApp.Data.Entities.ChatEntities;
 using ProtectionOfInfo.WebApp.Hubs;
 using ProtectionOfInfo.WebApp.Infrastructure.OperationResults;
+using ProtectionOfInfo.WebApp.TelegramBot;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ProtectionOfInfo.WebApp.Controllers
@@ -23,13 +18,16 @@ namespace ProtectionOfInfo.WebApp.Controllers
     {
         private readonly IChatMessagesManager _chatMessagesManager;
         private readonly IHubContext<CommunicationHub, ICommunicationHub> _hubContext;
+        private readonly IHandlerUpdateTelegramService _handlerTelegramService;
 
         public ChatController(
             IChatMessagesManager chatMessagesManager,
-            IHubContext<CommunicationHub, ICommunicationHub> hubContext)
+            IHubContext<CommunicationHub, ICommunicationHub> hubContext,
+            IHandlerUpdateTelegramService handlerTelegramService)
         {
             _chatMessagesManager = chatMessagesManager;
             _hubContext = hubContext;
+            _handlerTelegramService = handlerTelegramService;
         }
 
         [HttpGet]
@@ -62,7 +60,7 @@ namespace ProtectionOfInfo.WebApp.Controllers
                 }
 
                 string userName = User?.Identity?.Name ?? "Anonymous";
-                var file = new FileDescription()
+                var file = new Data.Entities.ChatEntities.File()
                 {
                     ContentType = uploadedFile.ContentType,
                     FileName = Path.GetFileNameWithoutExtension(uploadedFile.FileName),
@@ -75,10 +73,12 @@ namespace ProtectionOfInfo.WebApp.Controllers
                 if (result.IsImage)
                 {
                     await _hubContext.Clients.All.SendImageAsync(result.UserName, result.Url);
+                    await Task.Run(() => _handlerTelegramService.SendAllClientImage(file.Data, file.FileName, file.Extension, $"от {userName}"));
                 }
                 else
                 {
                     await _hubContext.Clients.All.SendUrlAsync(result.UserName, result.Url, result.FileName + result.Extension);
+                    await Task.Run(() => _handlerTelegramService.SendAllClientFile(file.Data, file.FileName, file.Extension, $"от {userName}"));
                 }
 
                 opeartion.Result = true;

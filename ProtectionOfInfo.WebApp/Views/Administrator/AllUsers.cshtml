@@ -77,7 +77,7 @@
                             </td>
                         }
                         <td>
-                            <a asp-controller="Administrator" asp-action="UpdateUser" asp-route-userId="@user.Id" class="btn btn-primary btn-block" role="button">Открыть</a>
+                            <a href="/Administrator/UpdateUser?userId=@user.Id!.ToString()" class="btn btn-primary btn-block" role="button">Открыть</a>
                         </td>
                     </tr>
                 }

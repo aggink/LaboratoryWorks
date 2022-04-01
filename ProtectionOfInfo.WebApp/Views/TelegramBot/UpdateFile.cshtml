@@ -1,0 +1,43 @@
+﻿@model ProtectionOfInfo.WebApp.ViewModels.TelegramViewModel.FileTelegramViewModel
+@{
+    ViewData["Title"] = "Редактирование файлов для публикации в телеграм";
+}
+
+<div class="container col-6 align-items-center mt-5">
+    <h1 class="text-center">Изменение данных</h1>
+    <form method="post" asp-controller="TelegramBot" asp-action="UpdateFile">
+        <div asp-validation-summary="All"></div>
+        <div class="form-group" style="display:none">
+                <label asp-for="Id" for="Id">Выберите файл</label>
+                <input asp-for="Id" type="text" class="form-control" id="Id">
+        </div>
+        <div class="container col-8 align-content-center">
+            <img src="@Model.Url" style="width:100%" >
+        </div>
+        <div class="form-group">
+            <label asp-for="Description" for="Description">Описание файла</label>
+            <input asp-for="Description" type="text" class="form-control" id="Description" placeholder="Опиасние">
+        </div>
+        <div class="form-group">
+            <label asp-for="Value" for="Value">Подпись к файлу</label>
+            <input asp-for="Value" type="text" class="form-control" id="Value" placeholder="Значение">
+        </div>
+        <div class="form-group">
+            <label asp-for="IsPublication" for="PasswordValidation">Использовать для публикации?</label>
+            <select asp-for="IsPublication" class="form-control" id="IsPublication">
+                @if (Model!= null && Model.IsPublication)
+                {
+                    <option value="true" selected>Да</option>
+                    <option value="false">Нет</option>
+
+                }
+                else
+                {
+                    <option value="true">Да</option>
+                    <option value="false" selected>Нет</option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Изменить данные</button>
+    </form>
+</div>

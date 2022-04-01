@@ -28,6 +28,7 @@ namespace ProtectionOfInfo.WebApp.Data
             await using var userDbContext = scope.ServiceProvider.GetService<UserDbContext>();
             await using var myKeysDbContext = scope.ServiceProvider.GetService<MyKeysDbContext>();
             await using var chatDbContext = scope.ServiceProvider.GetService<ChatDbContext>();
+            await using var telegramDbContext = scope.ServiceProvider.GetService<TelegramDbContext>();
 
             //проверка на существование БД
 
@@ -55,6 +56,13 @@ namespace ProtectionOfInfo.WebApp.Data
             {
                 await chatDbContext!.Database.MigrateAsync();
                 await chatDbContext!.SaveChangesAsync();
+            }
+
+            var telegram_IsExists = telegramDbContext!.GetService<IDatabaseCreator>() is RelationalDatabaseCreator telegramDbCreator && await telegramDbCreator.ExistsAsync();
+            if (!telegram_IsExists)
+            {
+                await telegramDbContext!.Database.MigrateAsync();
+                await telegramDbContext!.SaveChangesAsync();
             }
 
             if (user_IsExists) return;

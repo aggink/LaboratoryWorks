@@ -18,10 +18,15 @@ using ProtectionOfInfo.WebApp.Infrastructure.Services.ConvertToExcelService;
 using ProtectionOfInfo.WebApp.Infrastructure.Services.ConvertToWordService;
 using ProtectionOfInfo.WebApp.Infrastructure.Services.CryptographyService;
 using ProtectionOfInfo.WebApp.Infrastructure.Services.CryptographyService.Interface;
+using ProtectionOfInfo.WebApp.Infrastructure.Services.CurrencyService;
 using ProtectionOfInfo.WebApp.Infrastructure.Services.DictionaryApiService;
 using ProtectionOfInfo.WebApp.Infrastructure.Services.PasswordValidatorsService;
 using ProtectionOfInfo.WebApp.Infrastructure.Services.PortInfoService;
+using ProtectionOfInfo.WebApp.TelegramBot;
+using ProtectionOfInfo.WebApp.TelegramBot.Interfaces;
+using ProtectionOfInfo.WebApp.TelegramBot.Managers;
 using System;
+using Telegram.Bot;
 
 namespace ProtectionOfInfo.WebApp
 {
@@ -30,32 +35,15 @@ namespace ProtectionOfInfo.WebApp
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            BotConfig = Configuration.GetSection("BotConfiguration").Get<BotConfiguration>();
         }
 
         public IConfiguration Configuration { get; }
+        public BotConfiguration BotConfig { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDbContext<ChatDbContext>(options =>
-            //    options.UseSqlServer(
-            //        Configuration.GetConnectionString("ChatDbConnection"),
-            //        providerOption => providerOption.EnableRetryOnFailure()));
-            //
-            //services.AddDbContext<CatalogDbContext>(options =>
-            //    options.UseSqlServer(
-            //        Configuration.GetConnectionString("CatalogConnection"),
-            //        providerOption => providerOption.EnableRetryOnFailure()));
-            //
-            //services.AddDbContext<UserDbContext>(options =>
-            //    options.UseSqlServer(
-            //        Configuration.GetConnectionString("UsersConnection"),
-            //        providerOption => providerOption.EnableRetryOnFailure()));
-            //
-            //services.AddDbContext<MyKeysDbContext>(options => 
-            //    options.UseSqlServer(
-            //        Configuration.GetConnectionString("MyKeysConnection"),
-            //        providerOption => providerOption.EnableRetryOnFailure()));
 
             services.AddDbContext<ChatDbContext>(options =>
                 options.UseSqlServer(
@@ -63,19 +51,24 @@ namespace ProtectionOfInfo.WebApp
 
             services.AddDbContext<CatalogDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("CatalogConnection")));
+                    Configuration.GetConnectionString("CatalogDbConnection")));
 
             services.AddDbContext<UserDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("UsersConnection")));
+                    Configuration.GetConnectionString("UserDbConnection")));
 
             services.AddDbContext<MyKeysDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("MyKeysConnection")));
+                    Configuration.GetConnectionString("MyKeyDbConnection")));
+
+            services.AddDbContext<TelegramDbContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("TelegramDbConnection")));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddUnitOfWork<CatalogDbContext>();
             services.AddUnitOfWork<ChatDbContext>();
+            services.AddUnitOfWork<TelegramDbContext>();
 
             services.AddIdentity<MyIdentityUser, IdentityRole>(options =>
             {
@@ -113,7 +106,13 @@ namespace ProtectionOfInfo.WebApp
 
             services.AddAutoMapper(typeof(Startup));
 
-            services.AddControllersWithViews();
+            // The Telegram.Bot library heavily depends on Newtonsoft.Json library to deserialize
+            // incoming webhook updates and send serialized responses back.
+            // Read more about adding Newtonsoft.Json to ASP.NET Core pipeline:
+            //   https://docs.microsoft.com/en-us/aspnet/core/web-api/advanced/formatting?view=aspnetcore-5.0#add-newtonsoftjson-based-json-format-support
+
+            services.AddControllersWithViews().AddNewtonsoftJson();
+
             services.AddRazorPages();
 
             services.AddRouting(config =>
@@ -127,22 +126,19 @@ namespace ProtectionOfInfo.WebApp
             // dependency injection
 
             services.AddTransient<IMyPasswordValidatorService, PasswordValidatorService>();
-            
-            // ---
+
             services.AddTransient<IDataEncryptionService, DataEncryptionService>();
             services.AddTransient<IDictionaryApi, DictionaryApi>();
             
-            /// // aggink: update summary - 01.03.2022 1:18:51
             services.AddTransient<ICryptographyService, CryptographyService>();
             services.AddTransient<IPortInfoService, PortInfoService>();
             services.AddTransient<IConvertToExcel, ConvertToExcel>();
             services.AddTransient<ISettingEDSFileService, SettingEDSFileService>();
-            /// // aggink: update summary - 19.03.2022 1:45:29
             services.AddTransient<IConvertToWord, ConvertToWord>();
-            /// // aggink: update summary - 23.03.2022 16:36:36
             services.AddTransient<IChatMessagesManager, ChatMessagesManager>();
             services.AddSingleton<ChatManager>();
-            // ---
+            services.AddTransient<IFileTelegramManager, FileTelegramManager>();
+            services.AddTransient<ICurrencyService, CurrencyService>();
 
             RepositoryRegistration.AddScopedRepositories(services);
             ProviderRegistration.AddTransientProviders(services);
@@ -151,6 +147,25 @@ namespace ProtectionOfInfo.WebApp
             // other settings
             services.AddAntiforgery();
             services.AddDataProtection().PersistKeysToDbContext<MyKeysDbContext>();
+            services.AddHostedService<CurrencyService>();
+            services.AddMemoryCache();
+
+            // Register named HttpClient to get benefits of IHttpClientFactory
+            // and consume it with ITelegramBotClient typed client.
+            // More read:
+            //  https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-5.0#typed-clients
+            //  https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests
+            services.AddHttpClient("TelegramBot")
+                .AddTypedClient<ITelegramBotClient>(httpClient
+                    => new TelegramBotClient(BotConfig.BotToken, httpClient));
+            
+            // There are several strategies for completing asynchronous tasks during startup.
+            // Some of them could be found in this article https://andrewlock.net/running-async-tasks-on-app-startup-in-asp-net-core-part-1/
+            // We are going to use IHostedService to add and later remove Webhook
+            //services.AddScoped<ITelegramBotClient, TelegramBotClient>();
+            services.AddHostedService<WebhookConfigure>();
+            
+            services.AddScoped<IHandlerUpdateTelegramService, HandlerUpdateTelegramService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -212,9 +227,25 @@ namespace ProtectionOfInfo.WebApp
                     pattern: "{controller=Chat}/{action=SendFileAsync}");
 
                 endpoints.MapControllerRoute(
+                    name: "TelegramBot",
+                    pattern: "{controller=TelegramBot}/{action}");
+
+                endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}");
 
+
+                // Configure custom endpoint per Telegram API recommendations:
+                // https://core.telegram.org/bots/api#setwebhook
+                // If you'd like to make sure that the Webhook request comes from Telegram, we recommend
+                // using a secret path in the URL, e.g. https://www.example.com/<token>.
+                // Since nobody else knows your bot's token, you can be pretty sure it's us.
+                var token = BotConfig.BotToken;
+                endpoints.MapControllerRoute(name: "TelegramBot",
+                                             pattern: $"bot/{token}",
+                                             new { controller = "TelegramBot", action = "Post" });
+                
+                endpoints.MapControllers();
                 endpoints.MapRazorPages();
                 endpoints.MapHub<CommunicationHub>("/message");
             });

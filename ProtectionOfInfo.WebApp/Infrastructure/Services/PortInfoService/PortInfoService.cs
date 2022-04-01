@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace ProtectionOfInfo.WebApp.Infrastructure.Services.PortInfoService
 {

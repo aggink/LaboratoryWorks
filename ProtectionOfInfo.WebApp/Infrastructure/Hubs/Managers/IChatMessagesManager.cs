@@ -13,7 +13,7 @@ namespace ProtectionOfInfo.WebApp.Hubs
     {
         public Task<bool> AddMessageAsync(string userName, string message);
         public Task<List<MessageViewModel>> GetAllMessagesAsync();
-        public Task<FileUrlViewModel> AddFileAsync(string userName, FileDescription file);
+        public Task<FileUrlViewModel> AddFileAsync(string userName, File file);
         public Task<MyFileInfo> GetFileAsync(string id);
         public Task<MyFileInfo> GetImageAsync(string id);
         public Task<bool> DeleteMessageAsync();

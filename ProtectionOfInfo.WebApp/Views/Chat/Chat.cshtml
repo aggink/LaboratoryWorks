@@ -2,17 +2,25 @@
     ViewData["Title"] = "Чат";
 }
 
-<div class="container content mt-5" style="min-width:920px">
+<div class="container align-items-center mt-5">
+	<nav class="nav nav-pills justify-content-center">
+		<button id="GetOldMessages" class="btn btn-primary btn-lg mr-1 px-3 m-1 nav-link active">Получить старые сообщения</button>
+		<button id="Connect" class="btn btn-primary btn-lg mr-1 px-3 m-1 nav-link active">Войти</button>
+		<button id="Disconnect" class="btn btn-primary btn-lg mr-1 px-3 m-1 nav-link active">Выйти</button>
+	</nav>
+</div>
+
+<div class="container content mt-5">
     <div class="container p-0">
 		<div class="card">
 			<div class="row g-0">
 				<!--list users online-->
 				<div class="col-12 col-lg-5 col-xl-3 border-right">
-					<hr class="ListUsers d-block d-lg-none mt-1 mb-0">
+					<hr class="ListUsers d-block mt-1 mb-0">
 				</div>
 
 				<div class="col-12 col-lg-7 col-xl-9">
-					<div class="py-2 px-4 border-bottom d-none d-lg-block">
+					<div class="py-2 px-4 border-bottom d-lg-block">
 						<div class="d-flex align-items-center py-1">
 							<div class="position-relative">
 								<img src="~/images/avatar.jpg" class="rounded-circle mr-1" alt="Sharon Lessman" width="40" height="40">
@@ -21,11 +29,6 @@
 								@if(Context.User.Identity != null){
 									<strong id="userName">@Context.User.Identity!.Name</strong>
 								}
-							</div>
-							<div>
-								<button id="GetOldMessages" class="btn btn-primary btn-lg mr-1 px-3">Получить старые сообщения</button>
-								<button id="Connect" class="btn btn-primary btn-lg mr-1 px-3">Войти</button>
-								<button id="Disconnect" class="btn btn-primary btn-lg mr-1 px-3">Выйти</button>
 							</div>
 						</div>
 					</div>

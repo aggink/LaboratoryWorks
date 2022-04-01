@@ -130,7 +130,7 @@ namespace ProtectionOfInfo.WebApp.Hubs
             return result;
         }
 
-        public async Task<FileUrlViewModel> AddFileAsync(string userName, FileDescription file)
+        public async Task<FileUrlViewModel> AddFileAsync(string userName, File file)
         {
             var _cancellationToken = new CancellationTokenSource().Token;
 

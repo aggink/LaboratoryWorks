@@ -19,11 +19,6 @@ namespace ProtectionOfInfo.WebApp.Controllers.Administrator
     [AutoValidateAntiforgeryToken]
     public class AdministratorController : Controller
     {
-        // Просмотр списка имен зарегистрированных пользователей (всего целиком)
-        // Установление для пользователей параметров:
-        // 1. Блокировка учетной записи
-        // 2. Включение/Выключение ограничений на выбираемые пароли
-        // Регистрация новых пользователей
         private readonly UserManager<MyIdentityUser> _userManager;
         private readonly IMapper _mapper;
         private readonly IMyPasswordValidatorService _passwordMyValidator;

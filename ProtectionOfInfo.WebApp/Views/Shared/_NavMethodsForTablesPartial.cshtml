@@ -22,13 +22,6 @@
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             @foreach (var param in item.Param)
                             {
-                                //хз почему, но при первой загрузки страницы при формировании тега в адресс ссылки не добавляются параметры
-                                //<a class="dropdown-item"
-                                //   asp-controller="@item.Controller"
-                                //   asp-action="@item.Action"
-                                //   asp-route-TypeSort="@param.TypeSort"
-                                //   asp-route-ObjectSort="@param.ObjectSort">@param.Name
-                                //</a>
                                 <a class="dropdown-item" href="/@item.Controller/@item.Action?TypeSort=@param.TypeSort&ObjectSort=@param.ObjectSort">@param.Name</a>
                             }
                         </div>

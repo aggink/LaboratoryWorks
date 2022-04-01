@@ -1,0 +1,64 @@
+﻿@using ProtectionOfInfo.WebApp.ViewModels.TelegramViewModel
+@model List<FileTelegramViewModel>
+
+@{
+    ViewData["Title"] = "Добавление файлов для публикации в телеграм";
+}
+
+<div class="container col-12 align-items-center mt-5">
+    <h1 class="text-center mb-4">Просмотр загруженных файлов</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="text-center" scope="col">#</th>
+                <th class="text-center" scope="col">Изображение</th>
+                <th class="text-center" scope="col">Описание</th>
+                <th class="text-center" scope="col">Значение</th>
+                <th class="text-center" scope="col">Для публикации?</th>
+                <th class="text-center" scope="col">Изменить</th>
+                <th class="text-center" scope="col">Удалить</th>
+            </tr>
+        </thead>
+        @if (Model != null)
+        {
+            <tbody>
+                @{
+                    int i = 1;
+                    foreach (var value in Model)
+                    {
+                        <tr>
+                            <th class="text-center" scope="row">@i.ToString()</th>
+                            <td class="text-center" scope="row">
+                                @if (value.IsImage)
+                                {
+                                    <img src="@value.Url" style="width:200px" >
+                                }
+                                else
+                                {
+                                    <a href="@value.Url">@value.FileName</a>
+                                }
+                            </td>
+                            <td class="text-center" scope="row">@value.Description</td>
+                            <td class="text-center" scope="row">@value.Value</td>
+                            @if (value.IsPublication)
+                            {
+                                <td class="text-center" scope="row">Да</td>
+                            }
+                            else
+                            {
+                                <td class="text-center" scope="row">Нет</td>
+                            }
+                            <td class="text-center" scope="row">
+                                <a href="/TelegramBot/UpdateFile?id=@value.Id!.ToString()" class="btn btn-primary btn-block" role="button">Изменить</a>
+                            </td>
+                            <td class="text-center" scope="row">
+                                <a href="/TelegramBot/DeleteFile?id=@value.Id!.ToString()" class="btn btn-primary btn-block" role="button">Удалить</a>
+                            </td>
+                        </tr>
+                        i++;
+                    }
+                }
+            </tbody>
+        }
+        </table>
+</div>

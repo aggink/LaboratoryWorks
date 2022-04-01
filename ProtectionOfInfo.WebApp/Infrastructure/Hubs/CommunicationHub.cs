@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using ProtectionOfInfo.WebApp.Data;
 using ProtectionOfInfo.WebApp.Data.Entities;
 using ProtectionOfInfo.WebApp.Data.Entities.ChatEntities;
+using ProtectionOfInfo.WebApp.TelegramBot;
 using System;
 using System.Linq;
 using System.Threading;
@@ -16,15 +17,18 @@ namespace ProtectionOfInfo.WebApp.Hubs
     public class CommunicationHub : Hub<ICommunicationHub>
     {
         private readonly IChatMessagesManager _chatMessagesManager;
+        private readonly IHandlerUpdateTelegramService _handlerTelegramService;
         private readonly ChatManager _chatManager;
         private const string _defaultGroupName = "General";
 
         public CommunicationHub(
             ChatManager chatManager,
-            IChatMessagesManager chatMessagesManager)
+            IChatMessagesManager chatMessagesManager,
+            IHandlerUpdateTelegramService handlerTelegramService)
         {
             _chatManager = chatManager;
             _chatMessagesManager = chatMessagesManager;
+            _handlerTelegramService = handlerTelegramService;
         }
 
         public override async Task OnConnectedAsync()
@@ -62,6 +66,7 @@ namespace ProtectionOfInfo.WebApp.Hubs
             try
             {
                 await _chatMessagesManager.AddMessageAsync(userName, message);
+                await Task.Run(() => _handlerTelegramService.SendAllClientMessage($"от {userName}:\n{message}"));
                 await Clients.All.SendMessageAsync(userName, message);
             }
             catch (Exception ex)

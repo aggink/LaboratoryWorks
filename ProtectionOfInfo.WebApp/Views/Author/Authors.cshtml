@@ -86,10 +86,10 @@
                             <td class="text-center" scope="row">@value.Name</td>
                             <td class="text-center" scope="row">@value.Biography</td>
                             <td class="text-center" scope="row">
-                                <a asp-controller="Author" asp-action="Update" asp-route-Id="@value.Id.ToString()" class="btn btn-primary btn-block" role="button">Изменить</a>
+                                <a href="/Author/Update?id=@value.Id.ToString()" class="btn btn-primary btn-block" role="button">Изменить</a>
                             </td>
                             <td class="text-center" scope="row">
-                                <a asp-controller="Author" asp-action="Delete" asp-route-Id="@value.Id.ToString()" class="btn btn-primary btn-block" role="button">Удалить</a>
+                                <a href="/Author/Delete?id=@value.Id.ToString()" class="btn btn-primary btn-block" role="button">Удалить</a>
                             </td>
                         </tr>
                         i++;
