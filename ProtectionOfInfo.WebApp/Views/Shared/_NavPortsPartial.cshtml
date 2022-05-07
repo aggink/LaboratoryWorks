@@ -1,12 +1,8 @@
-﻿<div class="container col-6 align-items-center mt-5">
-    <h2 class="text-center mb-4">Cведения о сетевых интерфейсах локального компьютера и сетевых подключениях</h2>
-    <div class="row justify-content-start mb-3">
+﻿<div class="col-6 align-items-center">
+    <h2 class="text-center mb-4">Cведения о сетевых интерфейсах</h2>
+    <div class="d-grid gap-2">
         <a asp-controller="Administrator" asp-action="GetInfoPorts" class="btn btn-primary btn-block" type="submit">Список активных TCP подключений</a>
-    </div>
-    <div class="row justify-content-start mb-3">
         <a asp-controller="Administrator" asp-action="GetInfoActiveTCPListeners" class="btn btn-primary btn-block" type="submit">Сведения об активных прослушивателей TCP</a>
-    </div>
-    <div class="row justify-content-start mb-3">
         <a asp-controller="Administrator" asp-action="GetInfoActiveUDPListeners" class="btn btn-primary btn-block" type="submit">Сведения об активных прослушивателей UDP</a>
     </div>
 </div>

@@ -2,8 +2,6 @@
 @using ProtectionOfInfo.WebApp.ViewModels.PortInfoViewModels
 @model OperationResult<List<EndPointViewModel>>
 
-<partial name="_NavAdminPartial" />
-
 @if (Model != null && !Model.Ok || Model!.MetaData.Type != MetaDataType.Success)
 {
     var operation = new OperationResult<object>();

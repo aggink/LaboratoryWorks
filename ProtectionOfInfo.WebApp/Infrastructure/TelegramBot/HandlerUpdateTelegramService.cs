@@ -98,7 +98,7 @@ namespace ProtectionOfInfo.WebApp.TelegramBot
             await _botClient.SendChatActionAsync(message.Chat.Id, ChatAction.Typing);
 
             const string usage = "Используйте:\n" +
-                                 "/start - хехехе\n" +
+                                 "/start - начать\n" +
                                  "/select_photo - выбрать фото\n" +
                                  "/random_photo - получить рандомное фото\n" +
                                  "/exchange_rates - просмотреть курс валют\n";
@@ -142,10 +142,10 @@ namespace ProtectionOfInfo.WebApp.TelegramBot
                 });
             }
 
-            await _botClient.SendTextMessageAsync(
-                chatId: message.Chat.Id,
-                text: "Чёрт",
-                replyMarkup: new ReplyKeyboardRemove());
+            //await _botClient.SendTextMessageAsync(
+            //    chatId: message.Chat.Id,
+            //    text: "Чёрт",
+            //    replyMarkup: new ReplyKeyboardRemove());
 
             return await Usage(message);
         }

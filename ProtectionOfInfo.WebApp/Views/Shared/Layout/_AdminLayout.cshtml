@@ -20,14 +20,19 @@
             @switch (ViewBag.NavBar)
             {
                 case 1:
-                    <partial name="_NavAdminPartial" />
                     break;
                 case 2:
-                    <partial name="_NavAdminPartial" />
-                    <partial name="_NavDirectoryPartial" />
-                    <partial name="_NavPortsPartial" />
-                    <partial name="_NavChatParial"/>
-                    <partial name="_NavTelegramBotPartial" />
+                    <div class="row align-items-start mt-5 mb-5">
+                        <partial name="_NavAdminPartial" />
+                        <partial name="_NavPortsPartial" />
+                    </div>
+                    <div class="row align-items-start mt-5 mb-5">
+                        <partial name="_NavDirectoryPartial" />
+                        <div class="col-6 align-items-center">
+                            <partial name="_NavChatParial" />
+                            <partial name="_NavTelegramBotPartial" />
+                        </div>
+                    </div>
                     break;
                 default:
                     break;
