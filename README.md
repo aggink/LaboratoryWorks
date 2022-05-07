@@ -78,10 +78,10 @@
 
 * [Bootstrap](https://getbootstrap.com/)
 * HTML-шаблон чата: [Free Frontend](https://freefrontend.com/bootstrap-chats/)
-* 
+
 ---
 
-### Описание (все используемые картинки и структы
+### Описание (все используемые изображения в программе взяты из открытых источников)
 
 <p align="center">
   <img alt="Home" src="https://github.com/aggink/LaboratoryWorks/blob/main/Images/Home.jpg">
