@@ -70,7 +70,76 @@
 ---
 
 Более подробно о настройке телеграм бота тут:
+* [Telegram Bot API](https://core.telegram.org/bots/api)
 * [Telegram Bots](https://github.com/TelegramBots)
 * [ASP.NET Core Webhook Example](https://github.com/TelegramBots/Telegram.Bot.Examples/tree/master/Telegram.Bot.Examples.WebHook)
+
+---
+
+* [Bootstrap](https://getbootstrap.com/)
+* HTML-шаблон чата: [Free Frontend](https://freefrontend.com/bootstrap-chats/)
+* 
+---
+
+### Описание (все используемые картинки и структы
+
+<p align="center">
+  <img alt="Home" src="https://github.com/aggink/LaboratoryWorks/blob/main/Images/Home.jpg">
+</p>
+
+---
+
+<p align="center">
+  <img alt="HomeInfoBook" src="https://github.com/aggink/LaboratoryWorks/blob/main/Images/HomeInfoBook.jpg">
+</p>
+
+---
+
+
+<p align="center">
+  <img alt="Vocabulary" src="https://github.com/aggink/LaboratoryWorks/blob/main/Images/Vocabulary.jpg">
+</p>
+
+---
+
+<p align="center">
+  <img alt="DigitalSignature" src="https://github.com/aggink/LaboratoryWorks/blob/main/Images/DigitalSignature.jpg">
+</p>
+
+---
+
+<p align="center">
+  <img alt="FileProtection" src="https://github.com/aggink/LaboratoryWorks/blob/main/Images/FileProtection.jpg">
+</p>
+
+---
+
+<p align="center">
+  <img alt="AdminAccount" src="https://github.com/aggink/LaboratoryWorks/blob/main/Images/AdminAccount.jpg">
+</p>
+
+---
+
+<p align="center">
+  <img alt="ListOfPublishers" src="https://github.com/aggink/LaboratoryWorks/blob/main/Images/ListOfPublishers.jpg">
+</p>
+
+---
+
+<p align="center">
+  <img alt="Users" src="https://github.com/aggink/LaboratoryWorks/blob/main/Images/Users.jpg">
+</p>
+
+---
+
+<p align="center">
+  <img alt="Chat" src="https://github.com/aggink/LaboratoryWorks/blob/main/Images/Chat.jpg">
+</p>
+
+---
+
+<p align="center">
+  <img alt="TelegramBot" src="https://github.com/aggink/LaboratoryWorks/blob/main/Images/TelegramBot.jpg">
+</p>
 
 ---
