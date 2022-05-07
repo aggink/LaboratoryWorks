@@ -69,7 +69,7 @@
 
 ---
 
-Более подробно о настройке телеграм бота по тут:
+Более подробно о настройке телеграм бота тут:
 * [Telegram Bots](https://github.com/TelegramBots)
 * [ASP.NET Core Webhook Example](https://github.com/TelegramBots/Telegram.Bot.Examples/tree/master/Telegram.Bot.Examples.WebHook)
 
