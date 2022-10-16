@@ -31,7 +31,7 @@
 <div class="container mt-5">
     <div class="row align-items-start mb-5">
         <div class="col-6 align-items-center">
-            <h2 class="text-center">Создание ЭЦП</h2>
+            <h2 class="text-center">Создание ЭП</h2>
             <form method="post" asp-controller="FileEncryption" asp-action="CreateСertificate" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="months">Введите срок действия сертификата (в месяцах)</label>
@@ -42,7 +42,7 @@
         </div>
 
         <div class="col-6 align-items-center">
-            <h2 class="text-center">Удаление ЭЦП</h2>
+            <h2 class="text-center">Удаление ЭП</h2>
             <form class="mt-3" method="post" asp-controller="FileEncryption" asp-action="GetOriginalFile" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="fileForDelete">Выберите файл для расшифровки (.sign)</label>
@@ -55,7 +55,7 @@
 
     <div class="row align-items-start mt-5">
         <div class="col-6 align-items-center">
-            <h2 class="text-center">Установка ЭЦП</h2>
+            <h2 class="text-center">Установка ЭП</h2>
             <form method="post" asp-controller="FileEncryption" asp-action="SignFile" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="privateKey">Выберите файл с приватным ключом (.pem)</label>
@@ -74,7 +74,7 @@
         </div>
 
         <div class="col-6 align-items-center">
-            <h2 class="text-center">Проверка ЭЦП</h2>
+            <h2 class="text-center">Проверка ЭП</h2>
             <form method="post" asp-controller="FileEncryption" asp-action="CheckSignFile" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="publicKey">Выберите файл с публичным ключом (.pem)</label>
